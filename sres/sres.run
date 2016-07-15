@@ -1,0 +1,12 @@
+#PBS -N sres-scn
+#PBS -l nodes=1:ppn=10
+#PBS -l mem=3GB
+#PBS -l file=100MB
+#PBS -q biomath
+#PBS -j oe
+#PBS -o output.pbs-job
+#PBS -l walltime=360:00:00
+cd $PBS_O_WORKDIR
+
+time mpirun -np 5 ./sres -p 5 -r kfhalf.txt -f ../simulation/simulation -t good_scn_160714.txt -a quiet > output_cluster.txt
+
