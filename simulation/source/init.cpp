@@ -400,7 +400,7 @@ void init_seeds (input_params& ip, int set_num, bool append, bool indent_message
 void read_sim_params (input_params& ip, input_data& params_data, parameters& pr, input_data& ranges_data) {
 	cout << term->blue;
 	if (ip.piping) { // If the user specified piping
-		cout << "Reading pipe " << term->reset << "(file descriptor " << ip.pipe_in << ") . . . ";
+		//cout << "Reading pipe " << term->reset << "(file descriptor " << ip.pipe_in << ") . . . ";
 		read_pipe(pr, ip);
 		term->done();
 	} else if (ip.read_params) { // If the user specified a parameter sets input file
@@ -762,10 +762,8 @@ void update_initial_conditions(con_levels& cl){
 	cl.data[XA0000][0] = 0.00296863375;
 	cl.data[XA0010][0] = 7.2007275e-05;
 	cl.data[XA0011][0] = 0.01652770325;
-	cl.data[XA1000][0] = 0.0040973575;
 	cl.data[XA1010][0] = 1.8979525e-05;
 	cl.data[XA1011][0] = 0.00339172975;
-	cl.data[XA2000][0] = 0.0043578925;
 	cl.data[XA2010][0] = 1.6700725e-05;
 	cl.data[XA2011][0] = 0.0031591175;
 	cl.data[GPOR][0] = 0.787955; // GRB
@@ -774,4 +772,6 @@ void update_initial_conditions(con_levels& cl){
 	cl.data[GPT][0] = 0.210048;	//G
 	cl.data[GBN][0] = 0.599965;	//GB
 	cl.data[GBRN][0] = 0.39359;	//GBR
+	cl.data[X01002][0] = 23.875;
+	cl.data[X02002][0] = 26.575;
 }

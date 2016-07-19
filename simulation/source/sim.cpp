@@ -13,18 +13,6 @@
 using namespace std;
 extern terminal* term;
 
-bool check_up_more_upu(input_params& ip, rates& rs){
-	if (rs.rates_base[UP] > rs.rates_base[UPU]){
-		return true;
-	}
-	else {
-		if (ip.verbose){
-			cout << term->red << "This parameter gets point 0 because UP is smaller than UPU" << term->reset << endl;
-		}
-		return false;
-	}
-}
-
 void simulate_all_params(input_params& ip, rates& rs, sim_data& sd, parameters& pr, exp_data& ed){
 	con_levels cl (NUM_CONS, sd.big_gran, sd.big_gran);//cl contains simulation data
 	con_levels big_cl (NUM_CONS, sd.steps_total/sd.big_gran, sd.big_gran);
@@ -75,7 +63,7 @@ double simulate_scn_param_set(int set_num, input_params& ip, sim_data& sd, rates
 			valid = calculate_concentrations(ip, cl, big_cl, rs, sd);
 			if (valid) {
 				score += (double)test_wildtype_scn(big_cl, sd, wtf);
-				//cout << "Score WT: " << score << endl;
+				cout << "Score WT: " << score << endl;
 				if (sd.verbose){
 					cout << "WT MNPO: period: " << wtf.period[0] << "   amplitude: " << wtf.amplitude[0] << endl;
 					cout << "WT MNPT: period: " << wtf.period[1] << "   amplitude: " << wtf.amplitude[1] << endl;
@@ -95,7 +83,9 @@ double simulate_scn_param_set(int set_num, input_params& ip, sim_data& sd, rates
 			valid = calculate_concentrations(ip, cl, big_cl, rs, sd);
 			if (valid){
 				score += (double)test_per1kn_scn(big_cl, sd, wtf);
-				//cout << "Score P1: " << score << endl;
+				if (ip.verbose){
+					cout << "Score P1: " << score << endl;
+				}
 				if (ip.print_cons){
 					print_concentrations(ip, sd, big_cl, set_num, i);
 				}
@@ -111,7 +101,7 @@ double simulate_scn_param_set(int set_num, input_params& ip, sim_data& sd, rates
 			valid = calculate_concentrations(ip, cl, big_cl, rs, sd);
 			if (valid){
 				score += (double)test_per2kn_scn(big_cl, sd, wtf);
-				//cout << "Score P2: " << score << endl;
+				cout << "Score P2: " << score << endl;
 				if (ip.print_cons){
 					print_concentrations(ip, sd, big_cl, set_num, i);
 				}
@@ -127,7 +117,7 @@ double simulate_scn_param_set(int set_num, input_params& ip, sim_data& sd, rates
 			valid = calculate_concentrations(ip, cl, big_cl, rs, sd);
 			if (valid){
 				score += (double)test_per3kn_scn(big_cl, sd, wtf);
-				//cout << "Score P3: " << score << endl;
+				cout << "Score P3: " << score << endl;
 				if (ip.print_cons){
 					print_concentrations(ip, sd, big_cl, set_num, i);
 				}

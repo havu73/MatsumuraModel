@@ -194,12 +194,12 @@ struct input_params {
 	input_params () {
 		this->ranges_file = NULL;
 		this->sim_file = copy_str("../simulation/simulation");
-		this->num_dims = 73;
+		this->num_dims = 92;
 		this->pop_parents = 3;
-		this->pop_total = 20;
-		this->generations = 1750;
+		this->pop_total = 30;
+		this->generations = 5000;
 		this->seed = time(0);
-		this->good_set_threshold = 8.0;
+		this->good_set_threshold = 0.8;
 		this->print_good_sets = false;
 		this->good_sets_file = new char[50];
 		//this->good_sets_stream = NULL;

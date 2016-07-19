@@ -477,7 +477,7 @@ int test_per1kn_scn (con_levels& big_cl, sim_data& sd, wildtype_feats& wtf){
 	// WT mPer2
 	find_peaks_troughs(big_cl, pt, MNPT);
 	score += check_wildtype_behavior(pt, big_cl, sd, wtf, MNPT); 
-	pt.reset();
+	
 	
 	return score;
 }
@@ -499,9 +499,15 @@ int test_per2kn_scn (con_levels& big_cl, sim_data& sd, wildtype_feats& wtf){
 int test_per3kn_scn(con_levels& big_cl, sim_data& sd, wildtype_feats& wtf){
 	peak_trough pt;
 	int score = 0;
-	// WT mPer2
+	// WT or shorter period mPer2
 	find_peaks_troughs(big_cl, pt, MNPT);
-	score += check_wildtype_behavior(pt, big_cl, sd, wtf, MNPT);
+	score += check_shorter_period_behavior(pt, big_cl, sd, wtf, MNPT);
+	if (score < 1){
+		score += check_wildtype_behavior(pt, big_cl, sd, wtf, MNPT);
+	}
+	else{
+		score = 4;
+	}
 	pt.reset();
 	
 	// short period mBmal
@@ -561,6 +567,11 @@ int test_cry2kn_scn(con_levels& big_cl, sim_data& sd, wildtype_feats& wtf){
 		double per = calculate_average_period(pt, sd);
 		if (per >= (wtf.period[1] + SCN_C2_P2_LONG_PER)){
 			score += 1;
+		}
+		else{
+			if (sd.verbose){
+				term->verbose() << term->red << "	Failed the longer period condition " << term->reset << MNPT  << "  " << per << endl;
+			}
 		}
 	}
 	else {

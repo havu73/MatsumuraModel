@@ -215,10 +215,8 @@ void findGPH(double*, con_levels&, int, double);
 void findXA0000(double*, con_levels&, int, double);
 void findXA0010(double*, con_levels&, int, double);
 void findXA0011(double*, con_levels&, int, double);
-void findXA1000(double*, con_levels&, int, double);
 void findXA1010(double*, con_levels&, int, double);
 void findXA1011(double*, con_levels&, int, double);
-void findXA2000(double*, con_levels&, int, double);
 void findXA2010(double*, con_levels&, int, double);
 void findXA2011(double*, con_levels&, int, double);
 void findGPOR(double*, con_levels&, int, double);
@@ -227,4 +225,6 @@ void findGPTR(double*, con_levels&, int, double);
 void findGPT(double*, con_levels&, int, double);
 void findGBN(double*, con_levels&, int, double);
 void findGBRN(double*, con_levels&, int, double);
+void findX02002(double*, con_levels&, int, double);
+void findX01002(double*, con_levels&, int, double);
 #endif

@@ -584,7 +584,7 @@ bool not_EOL (char c) {
 	todo:
 */
 void write_pipe (double * score,  double * cond_score, double * exp_score, input_params& ip, sim_data& sd) {
-	cout << term -> blue << "Writing to file descriptor: " << term ->reset << ip.pipe_out << endl;
+	//cout << term -> blue << "Writing to file descriptor: " << term ->reset << ip.pipe_out << endl;
 	//write_pipe_double (ip.pipe_out, (double) MAX_SCORE);
 	if (write(ip.pipe_out, score, sizeof(double)) == -1) {
 		term->failed_pipe_write();

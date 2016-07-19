@@ -569,12 +569,6 @@ void test_rates(rates& rs){
 		else if (i == TRNP){
 			cout << "TRNP: " << r[i]<< endl;
 		}
-		else if (i == TLP){
-			cout << "TLP: " << r[i]<< endl;
-		}
-		else if (i == TLR){
-			cout << "TLR: " << r[i]<< endl;
-		}
 		else if (i == TLB){
 			cout << "TLB: " << r[i]<< endl;
 		}
@@ -701,9 +695,6 @@ void test_rates(rates& rs){
 		else if (i == NF){
 			cout << "NF: " << r[i]<< endl;
 		}
-		else if (i == UP){
-			cout << "UP: " << r[i]<< endl;
-		}
 		else if (i == URO){
 			cout << "URO: " << r[i]<< endl;
 		}
@@ -734,9 +725,7 @@ void test_rates(rates& rs){
 		else if (i == UBC){
 			cout << "UBC: " << r[i]<< endl;
 		}
-		else if (i == UPU){
-			cout << "UPU: " << r[i]<< endl;
-		}
+
 		else if (i == UREV){
 			cout << "UREV: " << r[i]<< endl;
 		}

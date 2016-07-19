@@ -596,17 +596,11 @@ bool calculate_concentrations(input_params& ip, con_levels& cl, con_levels& big_
 			else if (i == XA0011){
 				findXA0011(sim_rates, cl, j, sd.step_size);
 			}
-			else if (i == XA1000){
-				findXA1000(sim_rates, cl, j, sd.step_size);
-			}
 			else if (i == XA1010){
 				findXA1010(sim_rates, cl, j, sd.step_size);
 			}
 			else if (i == XA1011){
 				findXA1011(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == XA2000){
-				findXA2000(sim_rates, cl, j, sd.step_size);
 			}
 			else if (i == XA2010){
 				findXA2010(sim_rates, cl, j, sd.step_size);
@@ -632,9 +626,15 @@ bool calculate_concentrations(input_params& ip, con_levels& cl, con_levels& big_
 			else if (i == GBRN){
 				findGBRN(sim_rates, cl, j, sd.step_size);
 			}
+			else if (i == X01002){
+				findX01002(sim_rates, cl, j, sd.step_size);
+			}
+			else if (i == X02002){
+				findX02002(sim_rates, cl, j, sd.step_size);
+			}
 			
 			//// Check for nan value/////
-			if (isnan(cl.data[i][check_index]) || cl.data[i][check_index] < 0){
+			if (isnan(cl.data[i][check_index])){
 				valid = false;
 				break;
 			}	 
@@ -915,7 +915,9 @@ void findBC(double* rs, con_levels& cl, int c, double ss){
 	cl.data[BC][c] = ss * (- (rs[PHOS] * pbc)
 					- (rs[UBC] * pbc)
 					- (rs[UNCBIN] * pbc)
-					+ rs[CBIN] * cl.data[B][p] * cl.data[CL][p])
+					+ rs[CBIN] * cl.data[B][p] * cl.data[CL][p]
+					- rs[BINCRYB] * pbc * (cl.data[X01000][p] + cl.data[X02000][p])
+					+ rs[UNBINCRYB] * (cl.data[X01002][p] + cl.data[X02002][p]))
 					+ pbc;
 }
 
@@ -1032,12 +1034,12 @@ void findX00011(double* rs, con_levels& cl, int c, double ss){
 						- rs[CBBIN] * rs[NF] * px * (cl.data[X01010][p] + cl.data[X02010][p])
 						+ rs[URT] * cl.data[X02011][p] 
 						+ rs[UNCBBIN] * (cl.data[X01011][p] + cl.data[X02011][p])
-						+ rs[UPU] * (cl.data[X50011][p] + cl.data[X50111][p] + cl.data[X50211][p] + cl.data[X50311][p])
-						+ rs[UP] * (cl.data[X20011][p] + cl.data[X20111][p] 
-									+ cl.data[X40011][p] + cl.data[X40111][p] + cl.data[X40211][p] + cl.data[X40311][p] 
-									+ cl.data[X60011][p] + cl.data[X60111][p] + cl.data[X60211][p] + cl.data[X60311][p]
-									+ cl.data[X90011][p] + cl.data[X90111][p] //A
-									+ cl.data[XA0011][p]) //A
+						+ rs[UPTG] * (cl.data[X50011][p] + cl.data[X50111][p] + cl.data[X50211][p] + cl.data[X50311][p])
+						+ rs[UPO] * (cl.data[X20011][p] + cl.data[X20111][p])
+						+ rs[UPTC] * (cl.data[X40011][p] + cl.data[X40111][p] + cl.data[X40211][p] + cl.data[X40311][p])
+						+ rs[UPTCG] * (cl.data[X60011][p] + cl.data[X60111][p] + cl.data[X60211][p] + cl.data[X60311][p])
+						+ rs[UPOH] * (cl.data[X90011][p] + cl.data[X90111][p]) //A
+						+ rs[UPH] * cl.data[XA0011][p] //A
 						- rs[BBIN] * rs[NF] * px * (cl.data[X20010][p] + cl.data[X20110][p] + cl.data[X21010][p] + cl.data[X21110][p] + cl.data[X22010][p] + cl.data[X22110][p]
 									+ cl.data[X40010][p] + cl.data[X40110][p] + cl.data[X40210][p] + cl.data[X40310][p]
 									+ cl.data[X41010][p] + cl.data[X41110][p] + cl.data[X41210][p] + cl.data[X41310][p]
@@ -1076,14 +1078,14 @@ void findX00100 (double* rs, con_levels& cl, int c, double ss){
 	c = c % cl.big_gran;
 	double px = cl.data[X00100][p];
 	cl.data[X00100][c] = ss * (rs[LNE] * cl.data[X00110][p]
-						+ rs[UPU] * (cl.data[X10100][p] 
-									+ cl.data[X30100][p] + cl.data[X30300][p] 
-									+ cl.data[X50100][p] + cl.data[X50300][p]
-									+ cl.data[X80100][p]) //A
-						+ rs[UP] * (cl.data[X20100][p] 
-									+ cl.data[X40100][p] + cl.data[X40300][p] 
-									+ cl.data[X60100][p] + cl.data[X60300][p]
-									+ cl.data[X90100][p]) //A
+						+ rs[UPUO] * cl.data[X10100][p] 
+						+ rs[UPUT] * (cl.data[X30100][p] + cl.data[X30300][p])
+						+ rs[UPTG] * (cl.data[X50100][p] + cl.data[X50300][p])
+						+ rs[UPUOH] * cl.data[X80100][p] //A
+						+ rs[UPO] * cl.data[X20100][p] 
+						+ rs[UPTC] * (cl.data[X40100][p] + cl.data[X40300][p])
+						+ rs[UPTCG] * (cl.data[X60100][p] + cl.data[X60300][p])
+						+ rs[UPOH] * cl.data[X90100][p] //A
 						- rs[AC] * px * (cl.data[X10000][p] + cl.data[X30000][p]
 										+ cl.data[X20000][p] + cl.data[X21000][p] + cl.data[X22000][p] 
 										+ cl.data[X40000][p] + cl.data[X41000][p] + cl.data[X42000][p]
@@ -1113,12 +1115,12 @@ void findX00110(double * rs, con_levels& cl, int c, double ss){
 	c = c % cl.big_gran;
 	double px = cl.data[X00110][p];
 	cl.data[X00110][c] = ss * (- rs[LNE] * px
-						+ rs[UPU] * (cl.data[X50110][p] + cl.data[X50111][p] 
+						+ rs[UPTG] * (cl.data[X50110][p] + cl.data[X50111][p] 
 									+ cl.data[X50310][p] + cl.data[X50311][p])
-						+ rs[UP] * (cl.data[X20110][p] + cl.data[X20111][p]
-									+ cl.data[X40110][p] + cl.data[X40111][p] + cl.data[X40310][p] + cl.data[X40311][p]
-									+ cl.data[X60110][p] + cl.data[X60111][p] + cl.data[X60310][p] + cl.data[X60311][p]
-									+ cl.data[X90110][p] + cl.data[X90111][p]) //A
+						+ rs[UPO] * (cl.data[X20110][p] + cl.data[X20111][p])
+						+ rs[UPTC] * (cl.data[X40110][p] + cl.data[X40111][p] + cl.data[X40310][p] + cl.data[X40311][p])
+						+ rs[UPTCG] * (cl.data[X60110][p] + cl.data[X60111][p] + cl.data[X60310][p] + cl.data[X60311][p])
+						+ rs[UPOH] * (cl.data[X90110][p] + cl.data[X90111][p]) //A
 						- rs[AC] * rs[NF] * px * (cl.data[X20010][p] + cl.data[X21010][p] + cl.data[X22010][p]
 												+ cl.data[X40010][p] + cl.data[X41010][p] + cl.data[X42010][p]
 												+ cl.data[X50010][p] + cl.data[X51010][p] + cl.data[X52010][p]
@@ -1170,8 +1172,10 @@ void findX00200(double* rs, con_levels& cl, int c, double ss){
 						+ rs[UPREV] * cl.data[CYREVGP][p]
 						- rs[AG] * cl.data[CYREV][p] * px 
 						+ rs[LNE] * cl.data[X00210][p] 
-						+ rs[UPU] * (cl.data[X30200][p] + cl.data[X30300][p] + cl.data[X50200][p] + cl.data[X50300][p])
-						+ rs[UP] * (cl.data[X40200][p] + cl.data[X40300][p] + cl.data[X60200][p] + cl.data[X60300][p])
+						+ rs[UPUT] * (cl.data[X30200][p] + cl.data[X30300][p])
+						+ rs[UPTG] * (cl.data[X50200][p] + cl.data[X50300][p])
+						+ rs[UPTC] * (cl.data[X40200][p] + cl.data[X40300][p]) 
+						+ rs[UPTCG] * (cl.data[X60200][p] + cl.data[X60300][p])
 						- rs[AGP] * px * (cl.data[X30000][p] + cl.data[X30100][p]
 						
 										+ cl.data[X40000][p] + cl.data[X40100][p] 
@@ -1213,9 +1217,9 @@ void findX00210(double* rs, con_levels& cl, int c, double ss) {
 						+ rs[UPREV] * cl.data[REVNGP][p]
 						- rs[LNE] * cl.data[X00210][p]
 						- rs[AG] * rs[NF] * cl.data[REVN][p] * px
-						+ rs[UPU] * (cl.data[X50210][p] + cl.data[X50211][p] + cl.data[X50310][p] + cl.data[X50311][p])
-						+ rs[UP] * (cl.data[X40210][p] + cl.data[X40211][p] + cl.data[X40310][p] + cl.data[X40311][p]
-									+ cl.data[X60210][p] + cl.data[X60211][p] + cl.data[X60310][p] + cl.data[X60311][p]) 
+						+ rs[UPTG] * (cl.data[X50210][p] + cl.data[X50211][p] + cl.data[X50310][p] + cl.data[X50311][p])
+						+ rs[UPTC] * (cl.data[X40210][p] + cl.data[X40211][p] + cl.data[X40310][p] + cl.data[X40311][p])
+						+ rs[UPTCG] * (cl.data[X60210][p] + cl.data[X60211][p] + cl.data[X60310][p] + cl.data[X60311][p]) 
 						- rs[AGP] * rs[NF] * px * (cl.data[X40010][p] + cl.data[X40011][p] + cl.data[X40110][p] + cl.data[X40111][p]
 												+ cl.data[X41010][p] + cl.data[X41011][p] + cl.data[X41110][p] + cl.data[X41111][p]
 												+ cl.data[X42010][p] + cl.data[X42011][p] + cl.data[X42110][p] + cl.data[X42111][p]
@@ -1246,20 +1250,20 @@ void findX01000(double* rs, con_levels& cl, int c, double ss) {
 	int p = (c-1) % cl.big_gran;
 	c = c % cl.big_gran;
 	double px = cl.data[X01000][p];
-	cl.data[X01000][c] = ss * (rs[TLR] * cl.data[MCRO][p] 
+	cl.data[X01000][c] = ss * (rs[TLRO] * cl.data[MCRO][p] 
 					- rs[URO] * px
 					- rs[AR] * px * (cl.data[X20000][p] + cl.data[X20100][p]
 									+ cl.data[X40000][p] + cl.data[X40100][p] + cl.data[X40200][p] + cl.data[X40300][p]
 									+ cl.data[X50000][p] + cl.data[X50100][p] + cl.data[X50200][p] + cl.data[X50300][p]
-									+ cl.data[X60000][p] + cl.data[X60100][p] + cl.data[X60200][p] + cl.data[X60300][p]
-									+ cl.data[XA0000][p]) //A
+									+ cl.data[X60000][p] + cl.data[X60100][p] + cl.data[X60200][p] + cl.data[X60300][p]) //A
 									
 					+ rs[DR] * (cl.data[X21000][p] + cl.data[X21100][p]
 								+ cl.data[X41000][p] + cl.data[X41100][p] + cl.data[X41200][p] + cl.data[X41300][p]
 								+ cl.data[X51000][p] + cl.data[X51100][p] + cl.data[X51200][p] + cl.data[X51300][p]
-								+ cl.data[X61000][p] + cl.data[X61100][p] + cl.data[X61200][p] + cl.data[X61300][p])
-								+ cl.data[XA1000][p])//A
+								+ cl.data[X61000][p] + cl.data[X61100][p] + cl.data[X61200][p] + cl.data[X61300][p])//A
 					
+					- rs[BINCRYB] * cl.data[BC][p] * px
+					+ rs[UNBINCRYB] * cl.data[X01002][p])
 					+ px;
 }
 
@@ -1321,18 +1325,18 @@ void findX02000(double * rs, con_levels& cl, int c, double ss){
 	int p = (c-1) % cl.big_gran;
 	c = c % cl.big_gran;
 	double px = cl.data[X02000][p];
-	cl.data[X02000][c] = ss * (rs[TLR] * cl.data[MCRT][p]
+	cl.data[X02000][c] = ss * (rs[TLRT] * cl.data[MCRT][p]
 						- rs[URT] * px
 						- rs[AR] * px * (cl.data[X20000][p] + cl.data[X20100][p]
 									+ cl.data[X40000][p] + cl.data[X40100][p] + cl.data[X40200][p] + cl.data[X40300][p]
 									+ cl.data[X50000][p] + cl.data[X50100][p] + cl.data[X50200][p] + cl.data[X50300][p]
-									+ cl.data[X60000][p] + cl.data[X60100][p] + cl.data[X60200][p] + cl.data[X60300][p]
-									+ cl.data[XA0000][p])//A
+									+ cl.data[X60000][p] + cl.data[X60100][p] + cl.data[X60200][p] + cl.data[X60300][p])//A
 						+ rs[DR] * (cl.data[X22000][p] + cl.data[X22100][p]
 									+ cl.data[X42000][p] + cl.data[X42100][p] + cl.data[X42200][p] + cl.data[X42300][p]
 									+ cl.data[X52000][p] + cl.data[X52100][p] + cl.data[X52200][p] + cl.data[X52300][p]
-									+ cl.data[X62000][p] + cl.data[X62100][p] + cl.data[X62200][p] + cl.data[X62300][p]
-									+ cl.data[XA2000][p]))//A
+									+ cl.data[X62000][p] + cl.data[X62100][p] + cl.data[X62200][p] + cl.data[X62300][p])//A
+						- rs[BINCRYB] * cl.data[BC][p] * px
+						+ rs[UNBINCRYB] * cl.data[X02002][p])
 						+ px;
 }
 
@@ -1394,10 +1398,12 @@ void findX10000(double * rs, con_levels& cl, int c, double ss){
 	int p = (c-1) % cl.big_gran;
 	c = c % cl.big_gran;
 	double px = cl.data[X10000][p];
-	cl.data[X10000][c] = ss * (rs[TLP] * cl.data[MCPO][p]
-						- rs[UPU] * px
+	cl.data[X10000][c] = ss * (rs[TLPO] * cl.data[MCPO][p]
+						- rs[UPUO] * px
 						- rs[AC] * cl.data[X00100][p] * px
-						+ rs[DC] * cl.data[X10100][p])
+						+ rs[DC] * cl.data[X10100][p]
+						- rs[AN] * cl.data[X70000][p] * px
+						+ rs[DN] * cl.data[X80000][p])
 						+ px;
 }
 
@@ -1408,7 +1414,7 @@ void findX10100(double * rs, con_levels& cl, int c, double ss){
 	cl.data[X10100][c] = ss * (rs[AC] * cl.data[X00100][p] * cl.data[X10000][p]
 						- rs[DC] * px
 						- rs[HOO] * px
-						- rs[UPU] * px)
+						- rs[UPUO] * px)
 						+ px;
 }
 
@@ -1417,12 +1423,14 @@ void findX20000(double * rs, con_levels& cl, int c, double ss){
 	c = c % cl.big_gran;
 	double px = cl.data[X20000][p];
 	cl.data[X20000][c] = ss * (- rs[NL] * px 
-						- rs[UP] * px
+						- rs[UPO] * px
 						- rs[AC] * cl.data[X00100][p] * px
 						- rs[AR] * (cl.data[X01000][p] + cl.data[X02000][p]) * px
 						+ rs[NE] * cl.data[X20010][p] 
 						+ rs[DC] * cl.data[X20100][p]
-						+ rs[DR] * (cl.data[X21000][p] + cl.data[X22000][p]))
+						+ rs[DR] * (cl.data[X21000][p] + cl.data[X22000][p])
+						- rs[AN] * cl.data[X20000][p] * cl.data[XA0000][p]
+						+ rs[DN] * cl.data[X90000][p])
 						+ px ;
 }
 
@@ -1432,7 +1440,7 @@ void findX20010(double * rs, con_levels& cl, int c, double ss){
 	double px = cl.data[X20010][p];
 	cl.data[X20010][c] = ss * (rs[NL] * cl.data[X20000][p] 
 						- rs[NE] * px
-						- rs[UP] * px
+						- rs[UPO] * px
 						- rs[BBIN] * rs[NF] * cl.data[X00011][p] * px
 						- rs[AC] * rs[NF] * cl.data[X00110][p] * px
 						- rs[AR] * rs[NF] * (cl.data[X01010][p] + cl.data[X02010][p]) * px
@@ -1441,7 +1449,9 @@ void findX20010(double * rs, con_levels& cl, int c, double ss){
 						+ rs[UNBBIN] * cl.data[X20011][p]
 						+ rs[DC] * cl.data[X20110][p]
 						+ rs[DR] * (cl.data[X21010][p] + cl.data[X22010][p])
-						+ rs[DR] * (cl.data[X21011][p] + cl.data[X22011][p]))
+						+ rs[DR] * (cl.data[X21011][p] + cl.data[X22011][p])
+						- rs[AN] * rs[NF] * px * (cl.data[XA0010][p] + cl.data[XA0011])
+						+ rs[DN] * (cl.data[X90010][p] + cl.data[X90011][p]))
 						+ px;
 }
 
@@ -1452,11 +1462,13 @@ void findX20011(double * rs, con_levels& cl, int c, double ss){
 	cl.data[X20011][c] = ss * (rs[BBIN] * rs[NF] * cl.data[X00011][p] * cl.data[X20010][p]
 						- rs[UBC] * px
 						- rs[UNBBIN] * px
-						- rs[UP] * px
+						- rs[UPO] * px
 						- rs[AC] * rs[NF] * cl.data[X00110][p] * px
 						- rs[AR] * rs[NF] * (cl.data[X01010][p] + cl.data[X02010][p]) * px
 						+ rs[DC] * cl.data[X20111][p]
-						+ rs[DR] * (cl.data[X21011][p] + cl.data[X22011][p]))
+						+ rs[DR] * (cl.data[X21011][p] + cl.data[X22011][p])
+						- rs[AN] * rs[NF] * px * cl.data[XA0010][p]
+						+ rs[DN] * cl.data[X90011][p])
 						+ px;
 }
 
@@ -1468,7 +1480,7 @@ void findX20100(double * rs, con_levels& cl, int c, double ss){
 						+ rs[AC] * cl.data[X00100][p] * cl.data[X20000][p]
 						- rs[DC] * px
 						- rs[NL] * px
-						- rs[UP] * px
+						- rs[UPO] * px
 						- rs[AR] * (cl.data[X01000][p] + cl.data[X02000][p]) * px
 						+ rs[NE] * cl.data[X20110][p]
 						+ rs[DR] * (cl.data[X21100][p] + cl.data[X22100][p]))
@@ -1483,7 +1495,7 @@ void findX20110(double * rs, con_levels& cl, int c, double ss){
 						+ rs[NL] * cl.data[X20100][p] 
 						- rs[DC] * px
 						- rs[NE] * px
-						- rs[UP] * px
+						- rs[UPO] * px
 						- rs[BBIN] * rs[NF] * cl.data[X00011][p] * px
 						- rs[AR] * rs[NF] * (cl.data[X01010][p] + cl.data[X02010][p]) * px
 						- rs[AR] * rs[NF] * (cl.data[X01011][p] + cl.data[X02011][p]) * px
@@ -1503,7 +1515,7 @@ void findX20111(double * rs, con_levels& cl, int c, double ss){
 						- rs[DC] * px
 						- rs[UBC] * px
 						- rs[UNBBIN] * px
-						- rs[UP] * px
+						- rs[UPO] * px
 						- rs[AR] * rs[NF] * (cl.data[X01010][p] + cl.data[X02010][p]) * px
 						+ rs[DR] * (cl.data[X21111][p] + cl.data[X22111][p]))
 						+ px;
@@ -1682,8 +1694,8 @@ void findX30000(double * rs, con_levels& cl, int c, double ss){
 	int p = (c-1) % cl.big_gran;
 	c = c % cl.big_gran;
 	double px = cl.data[X30000][p];
-	cl.data[X30000][c] = ss * (rs[TLP] * cl.data[MCPT][p]
-						- rs[UPU] * px
+	cl.data[X30000][c] = ss * (rs[TLPT] * cl.data[MCPT][p]
+						- rs[UPUT] * px
 						- rs[AC] * cl.data[X00100][p] * px
 						- rs[AGP] * cl.data[X00200][p] * px
 						+ rs[DC] * cl.data[X30100][p]
@@ -1698,7 +1710,7 @@ void findX30100(double * rs, con_levels& cl, int c, double ss){
 	cl.data[X30100][c] = ss * (rs[AC] * cl.data[X00100][p] * cl.data[X30000][p]
 						- rs[DC] * px
 						- rs[HTO] * px
-						- rs[UPU] * px
+						- rs[UPUT] * px
 						- rs[AGP] * cl.data[X00200][p] * px
 						+ rs[DG] * cl.data[X30300][p])
 						+ px;
@@ -1710,7 +1722,7 @@ void findX30200(double * rs, con_levels& cl, int c, double ss){
 	double px = cl.data[X30200][p];
 	cl.data[X30200][c] = ss * (rs[AGP] * cl.data[X00200][p] * cl.data[X30000][p]
 						- rs[DG] * px
-						- rs[UPU] * px
+						- rs[UPUT] * px
 						- cl.data[GTO][p] * px
 						- rs[AC] * cl.data[X00100][p] * px
 						+ rs[DC] * cl.data[X30300][p])
@@ -1726,7 +1738,7 @@ void findX30300(double * rs, con_levels& cl, int c, double ss){
 						- rs[DC] * px
 						- rs[DG] * px
 						- rs[HTO] * px
-						- rs[UPU] * px
+						- rs[UPUT] * px
 						- cl.data[GTO][p] * px)
 						+ px;
 }
@@ -1736,7 +1748,7 @@ void findX40000(double * rs, con_levels& cl, int c, double ss){
 	c = c % cl.big_gran;
 	double px = cl.data[X40000][p];
 	cl.data[X40000][c] = ss * (- rs[NL] * px
-						- rs[UP] * px
+						- rs[UPTC] * px
 						- rs[AC] * cl.data[X00100][p] * px
 						- rs[AGP] * cl.data[X00200][p] * px
 						- rs[AR] * (cl.data[X01000][p] + cl.data[X02000][p]) * px
@@ -1753,7 +1765,7 @@ void findX40010(double * rs, con_levels& cl, int c, double ss){
 	double px = cl.data[X40010][p];
 	cl.data[X40010][c] = ss * (rs[NL] * cl.data[X40000][p]
 						- rs[NE] * px
-						- rs[UP] * px
+						- rs[UPTC] * px
 						- rs[BBIN] * rs[NF] * cl.data[X00011][p] * px
 						- rs[AC] * rs[NF] * cl.data[X00110][p] * px
 						- rs[AGP] * rs[NF] * cl.data[X00210][p] * px
@@ -1775,7 +1787,7 @@ void findX40011(double * rs, con_levels& cl, int c, double ss){
 	cl.data[X40011][c] = ss * (rs[BBIN] * rs[NF] * cl.data[X00011][p] * cl.data[X40010][p]
 						- rs[UBC] * px
 						- rs[UNBBIN] * px
-						- rs[UP] * px
+						- rs[UPTC] * px
 						- rs[AC] * rs[NF] * cl.data[X00110][p] * px
 						- rs[AGP] * rs[NF] * cl.data[X00210][p] * px
 						- rs[AR] * rs[NF] * (cl.data[X01010][p] + cl.data[X02010][p]) * px
@@ -1793,7 +1805,7 @@ void findX40100(double * rs, con_levels& cl, int c, double ss){
 						+ rs[AC] * cl.data[X00100][p] * cl.data[X40000][p]
 						- rs[DC] * px
 						- rs[NL] * px
-						- rs[UP] * px
+						- rs[UPTC] * px
 						- rs[AGP] *  cl.data[X00200][p] * px
 						- rs[AR] * (cl.data[X01000][p] + cl.data[X02000][p]) * px
 						+ rs[NE] * cl.data[X40110][p]
@@ -1810,7 +1822,7 @@ void findX40110(double * rs, con_levels& cl, int c, double ss){
 						+ rs[NL] * cl.data[X40100][p]
 						- rs[DC] * px
 						- rs[NE] * px
-						- rs[UP] * px
+						- rs[UPTC] * px
 						- rs[BBIN] * rs[NF] * cl.data[X00011][p] * px
 						- rs[AGP] * rs[NF] * cl.data[X00210][p] * px
 						- rs[AR] * rs[NF] * (cl.data[X01010][p] + cl.data[X02010][p]) * px
@@ -1833,7 +1845,7 @@ void findX40111(double * rs, con_levels& cl, int c, double ss){
 						- rs[DC] * px
 						- rs[UBC] * px
 						- rs[UNBBIN] * px
-						- rs[UP] * px
+						- rs[UPTC] * px
 						- rs[AGP] * rs[NF] * cl.data[X00210][p] * px
 						- rs[AR] * rs[NF] * (cl.data[X01010][p] + cl.data[X02010][p]) * px
 						+ rs[DG] * cl.data[X40311][p]
@@ -1848,7 +1860,7 @@ void findX40200(double * rs, con_levels& cl, int c, double ss){
 	cl.data[X40200][c] = ss * (rs[AGP] *  cl.data[X00200][p] * cl.data[X40000][p]
 						- rs[DG] * px
 						- rs[NL] * px
-						- rs[UP] * px
+						- rs[UPTC] * px
 						- cl.data[GTO][p] * px
 						- rs[AC] * cl.data[X00100][p] * px
 						- rs[AR] * (cl.data[X01000][p] + cl.data[X02000][p]) * px
@@ -1866,7 +1878,7 @@ void findX40210(double * rs, con_levels& cl, int c, double ss){
 						+ rs[NL] * cl.data[X40200][p]
 						- rs[DG] * px
 						- rs[NE] * px
-						- rs[UP] * px
+						- rs[UPTC] * px
 						- cl.data[GTO][p] * px
 						- rs[BBIN] * rs[NF] * cl.data[X00011][p] * px
 						- rs[AC] * rs[NF] * cl.data[X00110][p] * px
@@ -1889,7 +1901,7 @@ void findX40211(double * rs, con_levels& cl, int c, double ss){
 						- rs[DG] * px
 						- rs[UBC] * px
 						- rs[UNBBIN] * px
-						- rs[UP] * px
+						- rs[UPTC] * px
 						- cl.data[GTO][p] * px
 						- rs[AC] * rs[NF] * cl.data[X00110][p] * px
 						- rs[AR] * rs[NF] * (cl.data[X01010][p] + cl.data[X02010][p]) * px
@@ -1908,7 +1920,7 @@ void findX40300(double * rs, con_levels& cl, int c, double ss){
 						- rs[DC] * px
 						- rs[DG] * px
 						- rs[NL] * px
-						- rs[UP] * px
+						- rs[UPTC] * px
 						- cl.data[GTO][p] * px
 						- rs[AR] * (cl.data[X01000][p] + cl.data[X02000][p]) * px
 						+ rs[NE] * cl.data[X40310][p]
@@ -1926,7 +1938,7 @@ void findX40310(double * rs, con_levels& cl, int c, double ss){
 						- rs[DC] * px
 						- rs[DG] * px
 						- rs[NE] * px
-						- rs[UP] * px
+						- rs[UPTC] * px
 						- cl.data[GTO][p] * px
 						- rs[BBIN] * rs[NF] * cl.data[X00011][p] * px
 						- rs[AR] * rs[NF] * (cl.data[X01010][p] + cl.data[X02010][p]) * px
@@ -1949,7 +1961,7 @@ void findX40311(double * rs, con_levels& cl, int c, double ss){
 						- rs[DG] * px
 						- rs[UBC] * px
 						- rs[UNBBIN] * px
-						- rs[UP] * px
+						- rs[UPTC] * px
 						- cl.data[GTO][p] * px
 						- rs[AR] * rs[NF] * (cl.data[X01010][p] + cl.data[X02010][p]) * px
 						+ rs[DR] * (cl.data[X41311][p] + cl.data[X42311][p]))
@@ -2357,7 +2369,7 @@ void findX50000(double * rs, con_levels& cl, int c, double ss){
 	c = c % cl.big_gran;
 	double px = cl.data[X50000][p];
 	cl.data[X50000][c] = ss * (- rs[NL] * px
-						- rs[UP] * px
+						- rs[UPTG] * px
 						- rs[AC] * cl.data[X00100][p] * px
 						- rs[AGP] * cl.data[X00200][p] * px
 						- rs[AR] * (cl.data[X01000][p] + cl.data[X02000][p]) * px
@@ -2374,7 +2386,7 @@ void findX50010(double * rs, con_levels& cl, int c, double ss){
 	double px = cl.data[X50010][p];
 	cl.data[X50010][c] = ss * (rs[NL] * cl.data[X50000][p]
 						- rs[NE] * px
-						- rs[UP] * px
+						- rs[UPTG] * px
 						- rs[BBIN] * rs[NF] * cl.data[X00011][p] * px
 						- rs[AC] * rs[NF] * cl.data[X00110][p] * px
 						- rs[AGP] * rs[NF] * cl.data[X00210][p] * px
@@ -2396,7 +2408,7 @@ void findX50011(double * rs, con_levels& cl, int c, double ss){
 	cl.data[X50011][c] = ss * (rs[BBIN] * rs[NF] * cl.data[X00011][p] * cl.data[X50010][p]
 						- rs[UBC] * px
 						- rs[UNBBIN] * px
-						- rs[UP] * px
+						- rs[UPTG] * px
 						- rs[AC] * rs[NF] * cl.data[X00110][p] * px
 						- rs[AGP] * rs[NF] * cl.data[X00210][p] * px
 						- rs[AR] * rs[NF] * (cl.data[X01010][p] + cl.data[X02010][p]) * px
@@ -2414,7 +2426,7 @@ void findX50100(double * rs, con_levels& cl, int c, double ss){
 						- rs[DC] * px
 						- rs[HTO] * px
 						- rs[NL] * px
-						- rs[UP] * px
+						- rs[UPTG] * px
 						- rs[AGP] * cl.data[X00200][p] * px
 						- rs[AR] * (cl.data[X01000][p] + cl.data[X02000][p]) * px
 						+ rs[NE] * cl.data[X50110][p]
@@ -2432,7 +2444,7 @@ void findX50110(double * rs, con_levels& cl, int c, double ss){
 						- rs[DC] * px
 						- rs[HTO] * px
 						- rs[NE] * px
-						- rs[UP] * px
+						- rs[UPTG] * px
 						- rs[BBIN] * rs[NF] * cl.data[X00011][p] * px
 						- rs[AGP] * rs[NF] * cl.data[X00210][p] * px
 						- rs[AR] * rs[NF] * (cl.data[X01010][p] + cl.data[X02010][p]) * px
@@ -2455,7 +2467,7 @@ void findX50111(double * rs, con_levels& cl, int c, double ss){
 						- rs[HTO] * px
 						- rs[UBC] * px
 						- rs[UNBBIN] * px
-						- rs[UP] * px
+						- rs[UPTG] * px
 						- rs[AGP] * rs[NF] * cl.data[X00210][p] * px
 						- rs[AR] * rs[NF] * (cl.data[X01010][p] + cl.data[X02010][p]) * px
 						+ rs[DG] * cl.data[X50311][p]
@@ -2471,7 +2483,7 @@ void findX50200(double * rs, con_levels& cl, int c, double ss){
 						+ rs[AGP] * cl.data[X00200][p] * cl.data[X50000][p]
 						- rs[DG] * px
 						- rs[NL] * px
-						- rs[UP] * px
+						- rs[UPTG] * px
 						- rs[AC] * cl.data[X00100][p] * px
 						- rs[AR] * (cl.data[X01000][p] + cl.data[X02000][p]) * px
 						+ rs[NE] * cl.data[X50210][p]
@@ -2488,7 +2500,7 @@ void findX50210(double * rs, con_levels& cl, int c, double ss){
 						+ rs[NL] * cl.data[X50200][p]
 						- rs[DG] * px
 						- rs[NE] * px
-						- rs[UP] * px
+						- rs[UPTG] * px
 						- rs[BBIN] * rs[NF] * cl.data[X00011][p] * px
 						- rs[AC] * rs[NF] * cl.data[X00110][p] * px
 						- rs[AR] * rs[NF] * (cl.data[X01010][p] + cl.data[X02010][p]) * px
@@ -2510,7 +2522,7 @@ void findX50211(double * rs, con_levels& cl, int c, double ss){
 						- rs[DG] * px
 						- rs[UBC] * px
 						- rs[UNBBIN] * px
-						- rs[UP] * px
+						- rs[UPTG] * px
 						- rs[AC] * rs[NF] * cl.data[X00110][p] * cl.data[X50211][p]
 						- rs[AR] * rs[NF] * (cl.data[X01010][p] + cl.data[X02010][p]) * px
 						+ rs[DC] * cl.data[X50311][p]
@@ -2529,7 +2541,7 @@ void findX50300(double * rs, con_levels& cl, int c, double ss){
 						- rs[DC] * px
 						- rs[HTO] * px
 						- rs[NL] * px
-						- rs[UP] * px
+						- rs[UPTG] * px
 						- rs[AR] * (cl.data[X01000][p] + cl.data[X02000][p]) * px
 						+ rs[NE] * cl.data[X50310][p]
 						+ rs[DR] * (cl.data[X51300][p] + cl.data[X52300][p]))
@@ -2547,7 +2559,7 @@ void findX50310(double * rs, con_levels& cl, int c, double ss){
 						- rs[DC] * px
 						- rs[HTO] * px
 						- rs[NE] * px
-						- rs[UP] * px
+						- rs[UPTG] * px
 						- rs[BBIN] * rs[NF] * cl.data[X00011][p] * px
 						- rs[AR] * rs[NF] * (cl.data[X01010][p] + cl.data[X02010][p]) * px
 						- rs[AR] * rs[NF] * (cl.data[X01011][p] + cl.data[X02011][p]) * px
@@ -2570,7 +2582,7 @@ void findX50311(double * rs, con_levels& cl, int c, double ss){
 						- rs[HTO] * px
 						- rs[UBC] * px
 						- rs[UNBBIN] * px
-						- rs[UP] * px
+						- rs[UPTG] * px
 						- rs[AR] * rs[NF] * (cl.data[X01010][p] + cl.data[X02010][p]) * px
 						+ rs[DR] * (cl.data[X51311][p] + cl.data[X52311][p]))
 						+ px;
@@ -2587,8 +2599,7 @@ void findX51000(double * rs, con_levels& cl, int c, double ss){
 						- rs[AGP] * cl.data[X00200][p] * px
 						+ rs[NE] * cl.data[X51010][p]
 						+ rs[DC] * cl.data[X51100][p]
-						+ rs[DG] * cl.data[X51200][p]
-						- rs[UP] * px)
+						+ rs[DG] * cl.data[X51200][p])
 						+ px;
 }
 
@@ -2605,8 +2616,7 @@ void findX51010(double * rs, con_levels& cl, int c, double ss){
 						- rs[AGP] * rs[NF] * cl.data[X00210][p] * px
 						+ rs[UNBBIN] * cl.data[X51011][p]
 						+ rs[DC] * cl.data[X51110][p]
-						+ rs[DG] * cl.data[X51210][p]
-						- rs[UP] * px)
+						+ rs[DG] * cl.data[X51210][p])
 						+ px;
 }
 
@@ -2622,8 +2632,7 @@ void findX51011(double * rs, con_levels& cl, int c, double ss){
 						- rs[AC] * rs[NF] * cl.data[X00110][p] * cl.data[X51011][p]
 						- rs[AGP] * rs[NF] * cl.data[X00210][p] * px
 						+ rs[DC] * cl.data[X51111][p]
-						+ rs[DG] * cl.data[X51211][p]
-						- rs[UP] * px)
+						+ rs[DG] * cl.data[X51211][p])
 						+ px;
 }
 
@@ -2638,8 +2647,7 @@ void findX51100(double * rs, con_levels& cl, int c, double ss){
 						- rs[NL] * px
 						- rs[AGP] * cl.data[X00200][p] * px
 						+ rs[NE] * cl.data[X51110][p]
-						+ rs[DG] * cl.data[X51300][p]
-						- rs[UP] * px)
+						+ rs[DG] * cl.data[X51300][p])
 						+ px;
 }
 
@@ -2656,8 +2664,7 @@ void findX51110(double * rs, con_levels& cl, int c, double ss){
 						- rs[BBIN] * rs[NF] * cl.data[X00011][p] * px
 						- rs[AGP] * rs[NF] * cl.data[X00210][p] * cl.data[X51110][p]
 						+ rs[UNBBIN] * cl.data[X51111][p]
-						+ rs[DG] * cl.data[X51310][p]
-						- rs[UP] * px)
+						+ rs[DG] * cl.data[X51310][p])
 						+ px;
 }
 
@@ -2673,8 +2680,7 @@ void findX51111(double * rs, con_levels& cl, int c, double ss){
 						- rs[DR] * px * 2
 						- rs[UNBBIN] * px
 						- rs[AGP] * rs[NF] * cl.data[X00210][p] * px
-						+ rs[DG] * cl.data[X51311][p]
-						- rs[UP] * px)
+						+ rs[DG] * cl.data[X51311][p])
 						+ px;
 }
 
@@ -2689,8 +2695,7 @@ void findX51200(double * rs, con_levels& cl, int c, double ss){
 						- rs[NL] * px
 						- rs[AC] * cl.data[X00100][p] * px
 						+ rs[NE] * cl.data[X51210][p]
-						+ rs[DC] * cl.data[X51300][p]
-						- rs[UP] * px)
+						+ rs[DC] * cl.data[X51300][p])
 						+ px;
 }
 
@@ -2707,8 +2712,7 @@ void findX51210(double * rs, con_levels& cl, int c, double ss){
 						- rs[BBIN] * rs[NF] * cl.data[X00011][p] * px
 						- rs[AC] * rs[NF] * cl.data[X00110][p] * px
 						+ rs[UNBBIN] * cl.data[X51211][p]
-						+ rs[DC] * cl.data[X51310][p]
-						- rs[UP] * px)
+						+ rs[DC] * cl.data[X51310][p])
 						+ px;
 }
 
@@ -2724,8 +2728,7 @@ void findX51211(double * rs, con_levels& cl, int c, double ss){
 						- rs[DR] * px * 2
 						- rs[UNBBIN] * px
 						- rs[AC] * rs[NF] * cl.data[X00110][p] * px
-						+ rs[DC] * cl.data[X51311][p]
-						- rs[UP] * px)
+						+ rs[DC] * cl.data[X51311][p])
 						+ px;
 }
 
@@ -2740,8 +2743,7 @@ void findX51300(double * rs, con_levels& cl, int c, double ss){
 						- rs[DG] * px
 						- rs[DR] * px 
 						- rs[NL] * px
-						+ rs[NE] * cl.data[X51310][p]
-						- rs[UP] * px)
+						+ rs[NE] * cl.data[X51310][p])
 						+ px;
 }
 
@@ -2758,8 +2760,7 @@ void findX51310(double * rs, con_levels& cl, int c, double ss){
 						- rs[DR] * px 
 						- rs[NE] * px
 						- rs[BBIN] * rs[NF] * cl.data[X00011][p] * px
-						+ rs[UNBBIN] * cl.data[X51311][p]
-						- rs[UP] * px)
+						+ rs[UNBBIN] * cl.data[X51311][p])
 						+ px;
 }
 
@@ -2775,8 +2776,7 @@ void findX51311(double * rs, con_levels& cl, int c, double ss){
 						- rs[DC] * px
 						- rs[DG] * px
 						- rs[DR] * px * 2
-						- rs[UNBBIN] * px
-						- rs[UP] * px)
+						- rs[UNBBIN] * px)
 						+ px;
 }
 
@@ -2791,8 +2791,7 @@ void findX52000(double * rs, con_levels& cl, int c, double ss){
 						- rs[AGP] * cl.data[X00200][p] * cl.data[X52000][p]
 						+ rs[NE] * cl.data[X52010][p]
 						+ rs[DC] * cl.data[X52100][p]
-						+ rs[DG] * cl.data[X52200][p]
-						- rs[UP] * px)
+						+ rs[DG] * cl.data[X52200][p])
 						+ px;
 }
 
@@ -2809,8 +2808,7 @@ void findX52010(double * rs, con_levels& cl, int c, double ss){
 						- rs[AGP] * rs[NF] * cl.data[X00210][p] * px
 						+ rs[UNBBIN] * cl.data[X52011][p]
 						+ rs[DC] * cl.data[X52110][p]
-						+ rs[DG] * cl.data[X52210][p]
-						- rs[UP] * px)
+						+ rs[DG] * cl.data[X52210][p])
 						+ px;
 }
 
@@ -2826,8 +2824,7 @@ void findX52011(double * rs, con_levels& cl, int c, double ss){
 						- rs[AC] * rs[NF] * cl.data[X00110][p] * px
 						- rs[AGP] * rs[NF] * cl.data[X00210][p] * px
 						+ rs[DC] * cl.data[X52111][p]
-						+ rs[DG] * cl.data[X52211][p]
-						- rs[UP] * px)
+						+ rs[DG] * cl.data[X52211][p])
 						+ px;
 }
 
@@ -2842,8 +2839,7 @@ void findX52100(double * rs, con_levels& cl, int c, double ss){
 						- rs[NL] * px
 						- rs[AGP] * cl.data[X00200][p] * cl.data[X52100][p]
 						+ rs[NE] * cl.data[X52110][p]
-						+ rs[DG] * cl.data[X52300][p]
-						- rs[UP] * px)
+						+ rs[DG] * cl.data[X52300][p])
 						+ px;
 }
 
@@ -2860,8 +2856,7 @@ void findX52110(double * rs, con_levels& cl, int c, double ss){
 						- rs[BBIN] * rs[NF] * cl.data[X00011][p] * px
 						- rs[AGP] * rs[NF] * cl.data[X00210][p] * px
 						+ rs[UNBBIN] * cl.data[X52111][p]
-						+ rs[DG] * cl.data[X52310][p]
-						- rs[UP] * px)
+						+ rs[DG] * cl.data[X52310][p])
 						+ px;
 }
 
@@ -2877,8 +2872,7 @@ void findX52111(double * rs, con_levels& cl, int c, double ss){
 						- rs[DC] * px
 						- rs[UNBBIN] * px
 						- rs[AGP] * rs[NF] * cl.data[X00210][p] * px
-						+ rs[DG] * cl.data[X52311][p]
-						- rs[UP] * px)
+						+ rs[DG] * cl.data[X52311][p])
 						+ px;
 }
 
@@ -2893,8 +2887,7 @@ void findX52200(double * rs, con_levels& cl, int c, double ss){
 						- rs[NL] * px
 						- rs[AC] * cl.data[X00100][p] * px
 						+ rs[NE] * cl.data[X52210][p]
-						+ rs[DC] * cl.data[X52300][p]
-						- rs[UP] * px)
+						+ rs[DC] * cl.data[X52300][p])
 						+ px;
 }
 
@@ -2911,8 +2904,7 @@ void findX52210(double * rs, con_levels& cl, int c, double ss){
 						- rs[BBIN] * rs[NF] * cl.data[X00011][p] * px
 						- rs[AC] * rs[NF] * cl.data[X00110][p] * px
 						+ rs[UNBBIN] * cl.data[X52211][p]
-						+ rs[DC] * cl.data[X52310][p]
-						- rs[UP] * px)
+						+ rs[DC] * cl.data[X52310][p])
 						+ px;
 }
 
@@ -2928,8 +2920,7 @@ void findX52211(double * rs, con_levels& cl, int c, double ss){
 						- rs[DG] * px
 						- rs[UNBBIN] * px
 						- rs[AC] * rs[NF] * cl.data[X00110][p] * px
-						+ rs[DC] * cl.data[X52311][p]
-						- rs[UP] * px)
+						+ rs[DC] * cl.data[X52311][p])
 						+ px;
 }
 
@@ -2944,8 +2935,7 @@ void findX52300(double * rs, con_levels& cl, int c, double ss){
 						- rs[DR] * px
 						- rs[DG] * px
 						- rs[NL] * px
-						+ rs[NE] * cl.data[X52310][p]
-						- rs[UP] * px)
+						+ rs[NE] * cl.data[X52310][p])
 						+ px;
 }
 
@@ -2962,8 +2952,7 @@ void findX52310(double * rs, con_levels& cl, int c, double ss){
 						- rs[DG] * px
 						- rs[NE] * px
 						- rs[BBIN] * rs[NF] * cl.data[X00011][p] * px
-						+ rs[UNBBIN] * cl.data[X52311][p]
-						- rs[UP] * px)
+						+ rs[UNBBIN] * cl.data[X52311][p])
 						+ px;
 }
 
@@ -2979,8 +2968,7 @@ void findX52311(double * rs, con_levels& cl, int c, double ss){
 						- rs[DC] * px
 						- rs[DR] * px * 2
 						- rs[DG] * px
-						- rs[UNBBIN] * px
-						- rs[UP] * px)
+						- rs[UNBBIN] * px)
 						+ px;
 }
 
@@ -2989,7 +2977,7 @@ void findX60000(double * rs, con_levels& cl, int c, double ss){
 	c = c % cl.big_gran;
 	double px = cl.data[X60000][p];
 	cl.data[X60000][c] = ss * (- rs[NL] * px
-						- rs[UP] * px
+						- rs[UPTCG] * px
 						- rs[AC] * cl.data[X00100][p] * px
 						- rs[AGP] * cl.data[X00200][p] * px
 						- rs[AR] * (cl.data[X01000][p] + cl.data[X02000][p]) * px
@@ -3006,7 +2994,7 @@ void findX60010(double * rs, con_levels& cl, int c, double ss){
 	double px = cl.data[X60010][p];
 	cl.data[X60010][c] = ss * (rs[NL] * cl.data[X60000][p]
 						- rs[NE] * px
-						- rs[UP] * px
+						- rs[UPTCG] * px
 						- rs[BBIN] * rs[NF] * cl.data[X00011][p] * px
 						- rs[AC] * rs[NF] * cl.data[X00110][p] * px
 						- rs[AGP] * rs[NF] * cl.data[X00210][p] * px
@@ -3028,7 +3016,7 @@ void findX60011(double * rs, con_levels& cl, int c, double ss){
 	cl.data[X60011][c] = ss * (rs[BBIN] * rs[NF] * cl.data[X00011][p] * cl.data[X60010][p]
 						- rs[UBC] * px
 						- rs[UNBBIN] * px
-						- rs[UP] * px
+						- rs[UPTCG] * px
 						- rs[AC] * rs[NF] * cl.data[X00110][p] * px
 						- rs[AGP] * rs[NF] * cl.data[X00210][p] * px
 						- rs[AR] * rs[NF] * (cl.data[X01010][p] + cl.data[X02010][p]) * px
@@ -3046,7 +3034,7 @@ void findX60100(double * rs, con_levels& cl, int c, double ss){
 						+ rs[AC] * cl.data[X00100][p] * cl.data[X60000][p]
 						- rs[DC] * px
 						- rs[NL] * px
-						- rs[UP] * px
+						- rs[UPTCG] * px
 						- rs[AGP] * cl.data[X00200][p] * px
 						- rs[AR] * (cl.data[X01000][p] + cl.data[X02000][p]) * px
 						+ rs[NE] * cl.data[X60110][p]
@@ -3064,7 +3052,7 @@ void findX60110(double * rs, con_levels& cl, int c, double ss){
 						+ rs[NL] * cl.data[X60100][p]
 						- rs[DC] * px
 						- rs[NE] * px
-						- rs[UP] * px
+						- rs[UPTCG] * px
 						- rs[BBIN] * rs[NF] * cl.data[X00011][p] * px
 						- rs[AGP] * rs[NF] * cl.data[X00210][p] * px
 						- rs[AR] * rs[NF] * (cl.data[X01010][p] + cl.data[X02010][p]) * px
@@ -3087,7 +3075,7 @@ void findX60111(double * rs, con_levels& cl, int c, double ss){
 						- rs[DC] * px
 						- rs[UBC] * px
 						- rs[UNBBIN] * px
-						- rs[UP] * px
+						- rs[UPTCG] * px
 						- rs[AGP] * rs[NF] * cl.data[X00210][p] * cl.data[X60111][p]
 						- rs[AR] * rs[NF] * (cl.data[X01010][p] + cl.data[X02010][p]) * px
 						+ rs[DG] * cl.data[X60311][p]
@@ -3103,7 +3091,7 @@ void findX60200(double * rs, con_levels& cl, int c, double ss){
 						+ rs[AGP] * cl.data[X00200][p] * cl.data[X60000][p]
 						- rs[DG] * px
 						- rs[NL] * px
-						- rs[UP] * px
+						- rs[UPTCG] * px
 						- rs[AC] * cl.data[X00100][p] * px
 						- rs[AR] * (cl.data[X01000][p] + cl.data[X02000][p]) * px
 						+ rs[NE] * cl.data[X60210][p]
@@ -3121,7 +3109,7 @@ void findX60210(double * rs, con_levels& cl, int c, double ss){
 						+ rs[NL] * cl.data[X60200][p]
 						- rs[DG] * px
 						- rs[NE] * px
-						- rs[UP] * px	
+						- rs[UPTCG] * px	
 						- rs[BBIN] * rs[NF] * cl.data[X00011][p] * px
 						- rs[AC] * rs[NF] * cl.data[X00110][p] * px
 						- rs[AR] * rs[NF] * (cl.data[X01010][p] + cl.data[X02010][p]) * px
@@ -3144,7 +3132,7 @@ void findX60211(double * rs, con_levels& cl, int c, double ss){
 						- rs[DG] * px
 						- rs[UBC] * px
 						- rs[UNBBIN] * px
-						- rs[UP] * px
+						- rs[UPTCG] * px
 						- rs[AC] * rs[NF] * cl.data[X00110][p] * px
 						- rs[AR] * rs[NF] * (cl.data[X01010][p] + cl.data[X02010][p]) * px
 						+ rs[DC] * cl.data[X60311][p]
@@ -3163,7 +3151,7 @@ void findX60300(double * rs, con_levels& cl, int c, double ss){
 						- rs[DC] * px
 						- rs[DG] * px
 						- rs[NL] * px
-						- rs[UP] * px
+						- rs[UPTCG] * px
 						- rs[AR] * (cl.data[X01000][p] + cl.data[X02000][p]) * px
 						+ rs[NE] * cl.data[X60310][p]
 						+ rs[DR] * (cl.data[X61300][p] + cl.data[X62300][p]))
@@ -3182,7 +3170,7 @@ void findX60310(double * rs, con_levels& cl, int c, double ss){
 						- rs[DC] * px
 						- rs[DG] * px
 						- rs[NE] * px
-						- rs[UP] * px
+						- rs[UPTCG] * px
 						- rs[BBIN] * rs[NF] * cl.data[X00011][p] * cl.data[X60310][p]
 						- rs[AR] * rs[NF] * (cl.data[X01010][p] + cl.data[X02010][p]) * px
 						- rs[AR] * rs[NF] * (cl.data[X01011][p] + cl.data[X02011][p]) * px
@@ -3206,7 +3194,7 @@ void findX60311(double * rs, con_levels& cl, int c, double ss){
 						- rs[DG] * px
 						- rs[UBC] * px
 						- rs[UNBBIN] * px
-						- rs[UP] * px
+						- rs[UPTCG] * px
 						- rs[AR] * rs[NF] * (cl.data[X01010][p] + cl.data[X02010][p]) * px
 						+ rs[DR] * (cl.data[X61311][p] + cl.data[X62311][p]))
 						+ px;
@@ -3631,8 +3619,8 @@ void findX70000(double * rs, con_levels& cl, int c, double ss){
 	int p = (c-1) % cl.big_gran;
 	c = c % cl.big_gran;
 	double px = cl.data[X70000][p];
-	cl.data[X70000][c] = ss * (rs[TLP] * cl.data[MCPH][p]
-						- rs[UPU] * px
+	cl.data[X70000][c] = ss * (rs[TLPH] * cl.data[MCPH][p]
+						- rs[UPUH] * px
 						- rs[AN] * px * cl.data[X10000][p]
 						+ rs[DN] * cl.data[X80000][p])
 						+ px;
@@ -3646,7 +3634,7 @@ void findX80000(double * rs, con_levels& cl, int c, double ss){
 						- rs[DN] * px
 						- rs[AC] * cl.data[X00100][p] * px
 						+ rs[DC] * cl.data[X80100][p]
-						- rs[UPU] * px)
+						- rs[UPUOH] * px)
 						+ px;
 }
 
@@ -3657,7 +3645,7 @@ void findX80100(double * rs, con_levels& cl, int c, double ss){
 	cl.data[X80100][c] = ss * (rs[AC] * cl.data[X00100][p] * cl.data[X80000][p]
 						- rs[DC] * px
 						- rs[HOHO] * px
-						- rs[UPU] * px)
+						- rs[UPUOH] * px)
 						+ px;
 }
 
@@ -3667,7 +3655,7 @@ void findX90000(double * rs, con_levels& cl, int c, double ss){
 	double px = cl.data[X90000][p];
 	cl.data[X90000][c] = ss * (- rs[AC] * cl.data[X00100][p] * px
 						+ rs[DC] * cl.data[X90100][p]
-						- rs[UP] * px
+						- rs[UPOH] * px
 						+ rs[AN] * cl.data[XA0000][p] * cl.data[X20000][p]
 						- rs[DN] * px 
 						- rs[NL] * px
@@ -3681,7 +3669,7 @@ void findX90010(double * rs, con_levels& cl, int c, double ss){
 	double px = cl.data[X90010][p];
 	cl.data[X90010][c] = ss * (rs[NL] * cl.data[X90000][p]
 						- rs[NE] * px
-						- rs[UP] * px
+						- rs[UPOH] * px
 						- rs[BBIN] * rs[NF] * cl.data[X00011][p] * px
 						- rs[AC] * rs[NF] * cl.data[X00110][p] * px
 						+ rs[UBC] * cl.data[X90011][p]
@@ -3699,11 +3687,12 @@ void findX90011(double * rs, con_levels& cl, int c, double ss){
 	cl.data[X90011][c] = ss * (rs[BBIN] * rs[NF] * cl.data[X00011][p] * cl.data[X90010][p]
 						- rs[UBC] * px
 						- rs[UNBBIN] * px
-						- rs[UP] * px
+						- rs[UPOH] * px
 						- rs[AC] * rs[NF] * cl.data[X00110][p] * px
 						+ rs[DC] * cl.data[X90111][p]
 						+ rs[AN] * rs[NF] * cl.data[X20010][p] * cl.data[XA0011][p]
-						- rs[DN] * px)
+						+ rs[AN] * rs[NF] * cl.data[X20011][p] * cl.data[XA0010][p]
+						- rs[DN] * px * 2)
 						+ px;
 }
 
@@ -3716,7 +3705,7 @@ void findX90100(double * rs, con_levels& cl, int c, double ss){
 						+ rs[AC] * cl.data[X00100][p] * cl.data[X90000][p]
 						- rs[DC] * px
 						- rs[NL] * px
-						- rs[UP] * px
+						- rs[UPOH] * px
 						+ rs[NE] * cl.data[X90110][p])
 						+ px;
 }
@@ -3732,7 +3721,7 @@ void findX90110(double * rs, con_levels& cl, int c, double ss){
 						- rs[NE] * px
 						+ rs[AC] * rs[NF] * cl.data[X00110][p] * cl.data[X90010][p]
 						- rs[DC] * px
-						- rs[UP] * px)
+						- rs[UPOH] * px)
 						+ px;
 }
 
@@ -3745,7 +3734,7 @@ void findX90111(double * rs, con_levels& cl, int c, double ss){
 						- rs[UBC] * px
 						+ rs[BBIN] * rs[NF] * cl.data[X00011][p] * cl.data[X90110][p]
 						- rs[UNBBIN] * px
-						- rs[UP] * px)
+						- rs[UPOH] * px)
 						+ px;
 }
 
@@ -3774,9 +3763,7 @@ void findXA0000(double * rs, con_levels& cl, int c, double ss){
 	double px = cl.data[XA0000][p];
 	cl.data[XA0000][c] = ss * (- rs[AN] * px * cl.data[X20000][p]
 						+ rs[DN] * cl.data[X90000][p]
-						- rs[UP] * cl.data[XA0000][p]
-						- rs[AR] * px * (cl.data[X01000][p] + cl.data[X02000][p])
-						+ rs[DR] * (cl.data[XA1000][p] + cl.data[XA2000][p])
+						- rs[UPH] * cl.data[XA0000][p]
 						- rs[NL] * px
 						+ rs[NE] * cl.data[XA0010][p])
 						+ px;
@@ -3787,8 +3774,10 @@ void findXA0010(double * rs, con_levels& cl, int c, double ss){
 	c = c % cl.big_gran;
 	double px = cl.data[XA0010][p];
 	cl.data[XA0010][c] = ss * (- rs[AN] * rs[NF] * cl.data[X20010][p] * px
+						- rs[AN] * rs[NF] * cl.data[X20011][p] * cl.data[XA0010][p]
+						+ rs[DN] * cl.data[X90011][p]
 						+ rs[DN] * cl.data[X90010][p]
-						- rs[UP] * px
+						- rs[UPH] * px
 						+ rs[NL] * cl.data[XA0000][p]
 						- rs[NE] * px
 						- rs[AR] * rs[NF] * px * (cl.data[X01010][p] + cl.data[X02010][p])
@@ -3808,7 +3797,7 @@ void findXA0011(double * rs, con_levels& cl, int c, double ss){
 	cl.data[XA0011][c] = ss * (rs[BBIN] * rs[NF] * cl.data[XA0010][p] * cl.data[X00011][p]
 						- rs[UBC] * px
 						- rs[UNBBIN] * px
-						- rs[UP] * px
+						- rs[UPH] * px
 						- rs[AR] * rs[NF] * (cl.data[X01010][p] + cl.data[X02010][p]) * px
 						+ rs[DR] * (cl.data[XA1011][p] + cl.data[XA2011][p])
 						- rs[AN] * rs[NF] * cl.data[X20010][p] * px
@@ -3816,30 +3805,14 @@ void findXA0011(double * rs, con_levels& cl, int c, double ss){
 						+ px;
 }
 
-void findXA1000(double * rs, con_levels& cl, int c, double ss){
-	int p = (c-1) % cl.big_gran;
-	c = c % cl.big_gran;
-	double px = cl.data[XA1000][p];
-	cl.data[XA1000][c] = ss * (- rs[UP] * px
-						+ rs[AR] * cl.data[XA0000][p] * cl.data[X01000][p]
-						- rs[DR] * px
-						- rs[NL] * px
-						+ rs[NE] * cl.data[XA1010][p]) 
-						+ px;
-}
-
 void findXA1010(double * rs, con_levels& cl, int c, double ss){
 	int p = (c-1) % cl.big_gran;
 	c = c % cl.big_gran;
 	double px = cl.data[XA1010][p];
-	cl.data[XA1010][c] = ss * (- rs[UP] * px
-						+ rs[NL] * cl.data[XA1000][p]
-						- rs[NE] * px
-						+ rs[AR] * rs[NF] * cl.data[XA0010][p] * cl.data[X01010][p]
+	cl.data[XA1010][c] = ss * (rs[AR] * rs[NF] * cl.data[XA0010][p] * cl.data[X01010][p]
 						- rs[DR] * px
 						- rs[BBIN] * rs[NF] * cl.data[X00011][p] * px
-						+ rs[UNBBIN] * cl.data[XA1011][p] 
-						+ rs[UBC] * cl.data[XA1011][p]) 
+						+ rs[UNBBIN] * cl.data[XA1011][p]) 
 						+ px; 
 }
 
@@ -3849,24 +3822,10 @@ void findXA1011(double * rs, con_levels& cl, int c, double ss){
 	double px = cl.data[XA1011][p];
 	cl.data[XA1011][c] = ss * (rs[BBIN] * rs[NF] * cl.data[X00011][p] * cl.data[XA1010][p]
 						- rs[UNBBIN] * px
-						- rs[UBC] * px
-						- rs[UP] * px
 						+ rs[AR] * rs[NF] * cl.data[XA0011][p] * cl.data[X01010][p]
 						+ rs[AR] * rs[NF] * cl.data[XA0010][p] * cl.data[X01011][p]
 						- rs[DR] * px
 						- rs[DR] * px)
-						+ px;
-}
-
-void findXA2000(double * rs, con_levels& cl, int c, double ss){
-	int p = (c-1) % cl.big_gran;
-	c = c % cl.big_gran;
-	double px = cl.data[XA2000][p];
-	cl.data[XA2000][c] = ss * (rs[AR] * cl.data[XA0000][p] * cl.data[X02000][p]
-						- rs[DR] * px
-						- rs[NL] * cl.data[XA2000][p]
-						+ rs[NE] * cl.data[XA2010][p]
-						- rs[UP] * px)
 						+ px;
 }
 
@@ -3876,12 +3835,8 @@ void findXA2010(double * rs, con_levels& cl, int c, double ss){
 	double px = cl.data[XA2010][p];
 	cl.data[XA2010][c] = ss * (rs[AR] * rs[NF] * cl.data[XA0010][p] * cl.data[X02010][p]
 						- rs[DR] * px
-						- rs[UP] * px
-						+ rs[NL] * cl.data[XA2000][p]
-						- rs[NE] * px
 						- rs[BBIN] * rs[NF] * px * cl.data[X00011][p]
-						+ rs[UNBBIN] * cl.data[XA2011][p]
-						+ rs[UBC] * cl.data[XA2011][p])
+						+ rs[UNBBIN] * cl.data[XA2011][p])
 						+ px;
 }
 
@@ -3891,8 +3846,6 @@ void findXA2011(double * rs, con_levels& cl, int c, double ss){
 	double px = cl.data[XA2011][p];
 	cl.data[XA2011][c] = ss * (rs[BBIN] * rs[NF] * cl.data[X00011][p] * cl.data[XA2010][p]
 						- rs[UNBBIN] * px
-						- rs[UBC] * px
-						- rs[UP] * px
 						+ rs[AR] * rs[NF] * cl.data[XA0011][p] * cl.data[X02010][p]
 						+ rs[AR] * rs[NF] * cl.data[XA0010][p] * cl.data[X02011][p]
 						- rs[DR] * px
@@ -3952,4 +3905,22 @@ void findGBRN(double* rs, con_levels& cl, int c, double ss){
 	cl.data[GBRN][c] = ss * (- (rs[UNBINREVN] * px)
 					+ rs[BINREVN]* cl.data[GBN][p]*(cl.data[REVN][p] + cl.data[REVNG][p] + cl.data[REVNGP][p] + cl.data[REVNP][p]))
 					+ px;
+}
+
+void findX01002(double* rs, con_levels& cl, int c, double ss){
+	int p = (c-1) % cl.big_gran;
+	c = c % cl.big_gran;
+	double px = cl.data[X01002][p];
+	cl.data[X01002][c] = ss * (rs[BINCRYB] * cl.data[BC][p] * cl.data[X01000][p]
+						- rs[UNBINCRYB] * px)
+						+ px;		
+}
+
+void findX02002(double* rs, con_levels& cl, int c, double ss){
+	int p = (c-1) % cl.big_gran;
+	c = c % cl.big_gran;
+	double px = cl.data[X02002][p];
+	cl.data[X02002][c] = ss * (rs[BINCRYB] * cl.data[BC][p] * cl.data[X02000][p]
+						- rs[UNBINCRYB] * px)
+						+ px;
 }

@@ -201,18 +201,18 @@
 #define XA0000		193
 #define	XA0010		194
 #define	XA0011		195
-#define	XA1000		196
-#define	XA1010		197
-#define	XA1011		198
-#define	XA2000		199
-#define	XA2010		200
-#define	XA2011		201
-#define GPOR		202	// prob of Per1 E-box repression
-#define GPO			203	// prob of Per1 E-box activation
-#define GPTR		204	// prob of Per2 E-box repression
-#define GPT			205	// prob of Per2 E-box activation
-#define GBN			206	// prob of Npas2 RORE activated
-#define GBRN		207	// prob of Npas2 RORE repressed
+#define	XA1010		196
+#define	XA1011		197
+#define	XA2010		198
+#define	XA2011		199
+#define GPOR		200	// prob of Per1 E-box repression
+#define GPO			201	// prob of Per1 E-box activation
+#define GPTR		202	// prob of Per2 E-box repression
+#define GPT			203	// prob of Per2 E-box activation
+#define GBN			204	// prob of Npas2 RORE activated
+#define GBRN		205	// prob of Npas2 RORE repressed
+#define X01002		206 
+#define X02002		207
 
 #define NUM_CONS		208	//total number of things (mRNA, protein, complexes) in the system
 
@@ -226,8 +226,8 @@
 #define	TRB			4	//Transcription rate for Bmal
 #define	TRREV		5	//Transcription rate for Rev-erbs
 #define TRNP		6	//Transcription rate for Npas2
-#define	TLP			7	//Translation rate for Per1 and Per2
-#define	TLR			8	//Translation rate for Cry1 and Cry2
+#define	TLPO		7	//Translation rate for PER1
+#define	TLRO		8	//Translation rate for CRY1
 #define	TLB			9	//Translation rate for Bmal
 #define	TLREV		10	//Translation rate for Rev-erbs
 #define	TLC			11	//Translation rate for Clock
@@ -269,7 +269,7 @@
 #define	TRGTO		47	//increate rate GSK3beta activity
 #define	UGTO		48	//decrease-----------------------
 #define	NF			49	//ratio of cy and nu compartment volume
-#define	UP			50	//-----------------CKI phosphorylated Per
+#define	UPO			50	//-----------------CKI phosphorylated PER1
 #define	URO			51	//-----------------CRY1
 #define	URT			52	//-----------------CRY2
 #define	UMNP		53	//-----------------Npas2
@@ -280,7 +280,7 @@
 #define	UB			58	//-----------------BMAL
 #define	UC			59	//-----------------CLOCK/NPAS2
 #define	UBC			60	//-----------------BMAL-CLOCK/NPAS2
-#define	UPU			61	//-----------------unphosphorylated Per
+#define	UPUO		61	//-----------------unphosphorylated Per1
 #define	UREV		62	//-----------------unphosphorylated REV_ERBS
 #define	UPREV		63	//-----------------GSK3beta phosphorylated REV_ERBS
 #define	UMB			64	//-----------------Bmal
@@ -300,8 +300,21 @@
 #define UNBINPH		76
 #define BINREVN		77
 #define UNBINREVN	78
+#define UPTC		79 //degradation of CKI-phosphorylated PER2
+#define UPUT		80 //degradation of unphosphorylated PER2
+#define UPTG		81 //degradation of GSK-phosphorylated PER2
+#define UPTCG		82 //degradation of CKI- and GSK-phosphorylated PER2
+#define UPH			83 //degradation of CKI-phosphorylated PER3
+#define UPUH		84 //degradation of unphosphorylated PER3
+#define UPUOH		85 //degradation of unphosphorylated PER1-PER3
+#define UPOH		86 //degradation of CKI-phosphorylated PER1-PER3
+#define TLPT		87 //translation of PER2
+#define TLPH		88 //translation of PER3
+#define TLRT		89 //translation of CRY2
+#define BINCRYB		90 //Binding of CRY-unphosphorylated BMAL-CLK
+#define UNBINCRYB	91 //Unbinding of CRY-unphosphorylated BMAL-CLK
 
-#define NUM_RATES	79
+#define NUM_RATES	92
 
 // Macros for commonly used functions small enough to inject directly into the code
 #define INT_STRLEN(x) (log10((x) > 0 ? (x) : 1) + 1)
