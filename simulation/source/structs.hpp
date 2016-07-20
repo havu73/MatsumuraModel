@@ -242,9 +242,9 @@ struct input_params {
 		
 		//timing
 		this->num_sets = 1;
-		this->step_size = 0.001;
+		this->step_size = 0.005;
 		this->time_total = 100;
-		this->big_gran = 1000;
+		this->big_gran = 20;
 		
 		//seeds
 		this->seed = 0;
@@ -295,6 +295,8 @@ struct input_params {
 		delete this->null_stream;
 		delete this->passed_stream;
 		delete [] this->exp_data_file;
+		delete [] this->ranges_file;
+		delete [] this->mutants;
 	}
 };
 

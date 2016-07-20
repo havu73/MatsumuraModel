@@ -350,20 +350,31 @@
 #define	FIB						1
 #define MAX_TYPE				2
 
+// Macros about scores of criteria
+#define MAX_SUSTAINED_AMP_BEH	1
+#define MAX_AVG_PER_BEH			1
+#define MAX_WT_BEH				2
+#define MAX_SHORT_PER_BEH		2
+#define MAX_LONG_PER_BEH		2
+#define MAX_SHORT_AMP_BEH		2
+#define MAX_LONG_AMP_BEH		2
+#define MAX_ART_BEH				2
+#define MUTANT_SCN_SCORE		4
+
 // Macros about maximum score of a cell
-#define MAX_WT_SCN				6
-#define MAX_P1_SCN				5
-#define MAX_P2_SCN				1
-#define MAX_P3_SCN				5
-#define MAX_C1_SCN				2
-#define MAX_C2_SCN				2
-#define MAX_BM_SCN				1
+#define MAX_WT_SCN				4
+#define MAX_P1_SCN				4
+#define MAX_P2_SCN				4
+#define MAX_P3_SCN				4
+#define MAX_C1_SCN				4
+#define MAX_C2_SCN				4
+#define MAX_BM_SCN				4
 #define MAX_NP_SCN				4
-#define MAX_C1C2_SCN			1
+#define MAX_C1C2_SCN			4
 #define MAX_P2C1_SCN			0
 #define MAX_P2C2_SCN			0
 #define MAX_R_SCN				0
-#define MAX_SCN					27
+#define MAX_SCN					36
 
 #define MAX_WT_FIB				6
 #define MAX_P1_FIB				5
@@ -379,9 +390,7 @@
 #define MAX_R_FIB				1
 #define MAX_FIB					28
 
-// Macros about max score for different behaviors
-#define MAX_SUSTAINED_OSC_BEH	2
-#define MAX_WT_BEH				4
+
 
 // Macros for to test the bounds of period for sustained oscilation	
 #define LOW_BOUND_NUM_PERIOD	3	// At least how many periods do we need to see in 100 hours of simulation
@@ -408,6 +417,7 @@
 #define LONG_PER_THRES			3
 
 // Macros for shorter/longer period/ amplitude behavior for specific cases
+#define SCN_P3_P2_SHORT_PER		0.8
 #define SCN_C1_P2_SHORT_PER		1.2
 #define SCN_C2_P2_LONG_PER		1.2
 #define FIB_C2_P2_LONG_PER		1.8

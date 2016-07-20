@@ -30,6 +30,7 @@ void accept_input_params (int num_args, char** args, input_params& ip) {
 
 	if (num_args >1){
 		for (int i = 1; i < num_args; i += 2){
+			
 			//Process option and values 
 			o = args[i];
 			if (i < num_args - 1) {

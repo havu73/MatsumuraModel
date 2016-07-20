@@ -65,17 +65,10 @@ double simulate_scn_param_set(int set_num, input_params& ip, sim_data& sd, rates
 				score += (double)test_wildtype_scn(big_cl, sd, wtf);
 				cout << "Score WT: " << score << endl;
 				if (sd.verbose){
-					cout << "WT MNPO: period: " << wtf.period[0] << "   amplitude: " << wtf.amplitude[0] << endl;
 					cout << "WT MNPT: period: " << wtf.period[1] << "   amplitude: " << wtf.amplitude[1] << endl;
 					cout << "WT MNB : period: " << wtf.period[2] << "   amplitude: " << wtf.amplitude[2] << endl;
 				}
-				if (ip.print_cons){
-					print_concentrations(ip, sd, big_cl, set_num, i);
-				}
 			}
-			//else{
-				//cout<< term->blue << "Set " << term->reset << set_num << term->blue << " wild type failed because concentrations is negative or nan ..." << endl;
-			//}
 		}
 		else if (ip.mutants[i] == P1){
 			revert_rate = rs.rates_base[TRPO];
@@ -85,9 +78,6 @@ double simulate_scn_param_set(int set_num, input_params& ip, sim_data& sd, rates
 				score += (double)test_per1kn_scn(big_cl, sd, wtf);
 				if (ip.verbose){
 					cout << "Score P1: " << score << endl;
-				}
-				if (ip.print_cons){
-					print_concentrations(ip, sd, big_cl, set_num, i);
 				}
 			}
 			//else{
@@ -102,9 +92,6 @@ double simulate_scn_param_set(int set_num, input_params& ip, sim_data& sd, rates
 			if (valid){
 				score += (double)test_per2kn_scn(big_cl, sd, wtf);
 				cout << "Score P2: " << score << endl;
-				if (ip.print_cons){
-					print_concentrations(ip, sd, big_cl, set_num, i);
-				}
 			}
 			//else{
 				//cout << term->blue << "Set " << term->reset << set_num << term->blue << " mutant Per 2 knock down failed because concentrations is negative or nan ..." << endl;
@@ -133,7 +120,7 @@ double simulate_scn_param_set(int set_num, input_params& ip, sim_data& sd, rates
 			valid = calculate_concentrations(ip, cl, big_cl, rs, sd);
 			if (valid){
 				score += (double) test_cry1kn_scn(big_cl, sd, wtf);
-				//cout << "Score C1: " << score << endl;
+				cout << "Score C1: " << score << endl;
 			}
 			//else{
 				//cout << term->blue << "Set " << term->reset << set_num << term->blue << " mutant Cry 1 knock down failed because concentrations is negative or nan ..." << endl;
@@ -146,7 +133,7 @@ double simulate_scn_param_set(int set_num, input_params& ip, sim_data& sd, rates
 			valid = calculate_concentrations(ip, cl, big_cl, rs, sd);
 			if (valid){
 				score += (double) test_cry2kn_scn(big_cl, sd, wtf);
-				//cout << "Score C2: " << score << endl;
+				cout << "Score C2: " << score << endl;
 			}
 			//else {
 				//cout << term->blue << "Set " << term->reset << set_num << term->blue << " mutant Cry 2 knock down failed because concentrations is negative or nan ..." << endl;
@@ -159,7 +146,7 @@ double simulate_scn_param_set(int set_num, input_params& ip, sim_data& sd, rates
 			valid = calculate_concentrations(ip, cl, big_cl, rs, sd);
 			if (valid){
 				score += (double) test_bmalkn_scn(big_cl, sd, wtf);
-				//cout << "Score BM: " << score << endl;
+				cout << "Score BM: " << score << endl;
 			}
 			//else {
 				//cout << term->blue << "Set " << term->reset << set_num << term->blue << " mutant Bmal knock down failed because concentrations is negative or nan ..." << endl;				
@@ -187,7 +174,7 @@ double simulate_scn_param_set(int set_num, input_params& ip, sim_data& sd, rates
 			valid = calculate_concentrations(ip, cl, big_cl, rs, sd);
 			if (valid){
 				score += (double) test_c1c2kn_scn(big_cl, sd, wtf);
-				//cout << "Score C1C2: " << score << endl;
+				cout << "Score C1C2: " << score << endl;
 			}
 			//else {
 				//cout << term->blue << "Set " << term->reset << set_num << term->blue << " mutant Cry1 Cry2 knock down failed because concentrations is negative or nan ..." << endl;				

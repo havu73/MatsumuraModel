@@ -1,3 +1,4 @@
+
 #include <cmath>
 
 #include "kftest.hpp"
@@ -95,7 +96,7 @@ int test_average_period (peak_trough & pt, sim_data& sd, double * report){
 	
 	if (sd.cell_type == SCN){
 		if (MIN_PERIOD_SCN < total_period  && total_period < MAX_PERIOD_SCN){
-			score += 1;
+			score += MAX_AVG_PER_BEH;
 		}
 		else {
 			if (sd.verbose){
@@ -105,7 +106,7 @@ int test_average_period (peak_trough & pt, sim_data& sd, double * report){
 	}
 	else if (sd.cell_type == FIB){
 		if (MIN_PERIOD_FIB < total_period  && total_period < MAX_PERIOD_FIB){
-			score += 1;
+			score += MAX_AVG_PER_BEH;
 		}
 		else {
 			if (sd.verbose){
@@ -189,7 +190,6 @@ int test_sustained_amplitude(sim_data& sd, peak_trough& pt, con_levels& big_cl, 
 	double first_p2t = 0;
 	double mid_p2t = 0;
 	double last_p2t = 0;
-	int score = 0;
 	
 	//If we could not find enough peaks and troughs to make the simulation reasonable --> score = 0
 	if (pt.peaks.size() < LOW_BOUND_NUM_AMP) {
@@ -201,25 +201,16 @@ int test_sustained_amplitude(sim_data& sd, peak_trough& pt, con_levels& big_cl, 
 	
 	calculate_p2t(pt, big_cl, con_index, &first_p2t, &mid_p2t, &last_p2t);
 
-	bool passed = true;
-	if (mid_p2t < LOW_BOUND_P2T){
-		passed = false;
-	}
-	if (last_p2t < LOW_BOUND_P2T){
-		passed = false;
-	}
-	if ((mid_p2t / last_p2t) > UP_BOUND_M2L){
-		passed = false;
-	}
-	if (passed){
-		score = 1;
-	}
-	else {
+
+	if (mid_p2t < LOW_BOUND_P2T || last_p2t < LOW_BOUND_P2T || (mid_p2t / last_p2t) > UP_BOUND_M2L){
 		if (sd.verbose){
 			term->verbose()<< term->red << "	Failed test_sustained_amplitude: " << term->reset << con_index << "  " << mid_p2t << "  " << last_p2t << endl;
 		}
+		return 0;
 	}
-	return score;
+	
+	
+	return MAX_SUSTAINED_AMP_BEH;
 }
 
 double calculate_average_amplitude(peak_trough& pt, con_levels& big_cl, int con_index){
@@ -242,7 +233,7 @@ double calculate_average_amplitude(peak_trough& pt, con_levels& big_cl, int con_
 }
 
 /*
- * Maximum score : 4
+ * Maximum score : 2
  */
 int check_wildtype_behavior(peak_trough& pt, con_levels& big_cl, sim_data& sd, wildtype_feats& wtf, int con_index){
 	int wtf_index;
@@ -252,9 +243,11 @@ int check_wildtype_behavior(peak_trough& pt, con_levels& big_cl, sim_data& sd, w
 	double per;
 	double amp;
 	
-	// sustained oscillation
-	score += test_average_period(pt, sd, &per);
-	score += test_sustained_amplitude(sd, pt, big_cl, con_index);
+	// sustained 
+	int s_osc = test_sustained_amplitude(sd, pt, big_cl, con_index);
+	if (s_osc != MAX_SUSTAINED_AMP_BEH){
+		return 0;
+	}
 	
 	amp = calculate_average_amplitude(pt, big_cl, con_index);
 	
@@ -269,9 +262,9 @@ int check_wildtype_behavior(peak_trough& pt, con_levels& big_cl, sim_data& sd, w
 			term->verbose() << term->red << "	Failed period 1% error condition WT behavior " << term->reset << con_index << "  " << per << endl;
 		}
 	}
-	// amplitude of mt i s10 % error from amplitude wt
+	// amplitude of mt i 20 % error from amplitude wt
 	if (amp <= (UP_WT_AMP_ERROR * wt_amp) && amp >= (LOW_WT_AMP_ERROR * wt_amp)){
-		score +=1;
+		score += 1;
 	}
 	else {
 		if (sd.verbose){
@@ -283,7 +276,7 @@ int check_wildtype_behavior(peak_trough& pt, con_levels& big_cl, sim_data& sd, w
 }
 
 /*
- * Maximum: 1
+ * Maximum: 2
  */
 int check_shorter_period_behavior(peak_trough& pt, con_levels& big_cl, sim_data& sd, wildtype_feats& wtf, int con_index){
 	int score = 0;
@@ -293,7 +286,7 @@ int check_shorter_period_behavior(peak_trough& pt, con_levels& big_cl, sim_data&
 	if (pt.peaks.size() >= LOW_BOUND_NUM_PERIOD){
 		double per = calculate_average_period(pt, sd);
 		if ((per <= (wtf.period[wtf_index] * SHORT_PER_FACTOR)) && (per > (wtf.period[wtf_index] - SHORT_PER_THRES))){
-			score += 1;
+			score += MAX_SHORT_PER_BEH;
 		}
 		else {
 			if (sd.verbose){
@@ -311,7 +304,7 @@ int check_shorter_period_behavior(peak_trough& pt, con_levels& big_cl, sim_data&
 }
 
 /*
- * Maximum: 1
+ * Maximum: 2
  */
 int check_longer_period_behavior(peak_trough& pt, con_levels& big_cl, sim_data& sd, wildtype_feats& wtf, int con_index){
 	int score = 0;
@@ -321,7 +314,7 @@ int check_longer_period_behavior(peak_trough& pt, con_levels& big_cl, sim_data& 
 	if (pt.peaks.size() >= LOW_BOUND_NUM_PERIOD){
 		double per = calculate_average_period(pt, sd);
 		if ((per >= (wtf.period[wtf_index] * LONG_PER_FACTOR)) && (per < (wtf.period[wtf_index] + LONG_PER_THRES))){
-			score += 1;
+			score += MAX_LONG_PER_BEH;
 		}
 		else{
 			if (sd.verbose){
@@ -339,7 +332,7 @@ int check_longer_period_behavior(peak_trough& pt, con_levels& big_cl, sim_data& 
 }
 
 /*
- * Maximum: 1
+ * Maximum: 2
  */
 int check_shorter_amplitude_behavior(peak_trough& pt, con_levels& big_cl, sim_data& sd, wildtype_feats& wtf, int con_index){
 	int score = 0;
@@ -349,7 +342,7 @@ int check_shorter_amplitude_behavior(peak_trough& pt, con_levels& big_cl, sim_da
 	if (pt.peaks.size() >= LOW_BOUND_NUM_PERIOD){
 		double amp = calculate_average_amplitude(pt, big_cl, con_index);
 		if (amp <= (wtf.amplitude[wtf_index] * SHORT_AMP_FACTOR)){
-			score += 1;
+			score += MAX_SHORT_AMP_BEH;
 		}
 		else {
 			if (sd.verbose){
@@ -367,7 +360,7 @@ int check_shorter_amplitude_behavior(peak_trough& pt, con_levels& big_cl, sim_da
 }
 
 /*
- * Maximum: 1
+ * Maximum: 2
  */
 int check_longer_amplitude_behavior(peak_trough& pt, con_levels& big_cl, sim_data& sd, wildtype_feats& wtf, int con_index){
 	int score = 0;
@@ -377,7 +370,7 @@ int check_longer_amplitude_behavior(peak_trough& pt, con_levels& big_cl, sim_dat
 	if (pt.peaks.size() >= LOW_BOUND_NUM_PERIOD){
 		double amp = calculate_average_amplitude(pt, big_cl, con_index);
 		if (amp >= (wtf.amplitude[wtf_index] * LONG_AMP_FACTOR)){
-			score += 1;
+			score += MAX_LONG_AMP_BEH;
 		}
 		else {
 			if (sd.verbose){
@@ -396,21 +389,21 @@ int check_longer_amplitude_behavior(peak_trough& pt, con_levels& big_cl, sim_dat
 }
 
 /*
- * Maximum: 1
+ * Maximum: 2
  */
 int check_arythmic_behavior(sim_data& sd, peak_trough& pt, con_levels& big_cl, int con_index){
 	double first_p2t = 0;
 	double mid_p2t = 0;
 	double last_p2t = 0 ;
 	if (pt.peaks.size() < LOW_BOUND_NUM_PERIOD){
-		return 1;
+		return MAX_ART_BEH;
 	}
 	
 	calculate_p2t(pt, big_cl, con_index, &first_p2t, &mid_p2t, &last_p2t);
 	
 	double ratio = mid_p2t / last_p2t;
 	if (ratio > LOW_AR_MID_LAST_RATIO){
-		return 1;
+		return MAX_ART_BEH;
 	}
 	else {
 		if (sd.verbose){
@@ -431,20 +424,14 @@ int check_rythmic_behavior(sim_data& sd, peak_trough& pt, con_levels& big_cl, in
 
 /*
  * Test for sustained oscillations of mPer1, mPer2, mBmal
- * Maximum:  2*3 = 6
+ * Maximum:  2*2 = 4
  */ 
 int test_wildtype_scn(con_levels& big_cl, sim_data& sd, wildtype_feats& wtf){
 	int score = 0;
 	// the following indices MUST correspond to what we have in wtf.species_index
-	int mnpo_index = 0;
 	int mnpt_index = 1;
 	int mnb_index = 2; 
 	peak_trough pt;
-	find_peaks_troughs(big_cl, pt, MNPO);
-	score += test_average_period(pt, sd, &wtf.period[mnpo_index]);
-	score += test_sustained_amplitude(sd, pt, big_cl, MNPO);
-	wtf.amplitude[mnpo_index] = calculate_average_amplitude(pt, big_cl, MNPO);
-	pt.reset();
 	
 	find_peaks_troughs(big_cl, pt, MNPT);
 	score += test_average_period(pt, sd, &wtf.period[mnpt_index]);
@@ -462,7 +449,7 @@ int test_wildtype_scn(con_levels& big_cl, sim_data& sd, wildtype_feats& wtf){
 
 
 /*
- * maximum : 4 + 1 = 5
+ * maximum : 2 + 2 = 4
  */
 int test_per1kn_scn (con_levels& big_cl, sim_data& sd, wildtype_feats& wtf){
 	int score = 0;
@@ -470,9 +457,10 @@ int test_per1kn_scn (con_levels& big_cl, sim_data& sd, wildtype_feats& wtf){
 	//short period mBmal or arythmic mBmal
 	find_peaks_troughs(big_cl, pt, MNB);
 	score += check_shorter_period_behavior(pt, big_cl, sd, wtf, MNB);
-	if (score < 1){
+	if (score < MAX_SHORT_PER_BEH){
 		score += check_arythmic_behavior(sd, pt, big_cl, MNB);
 	}
+	
 	pt.reset();
 	// WT mPer2
 	find_peaks_troughs(big_cl, pt, MNPT);
@@ -483,30 +471,32 @@ int test_per1kn_scn (con_levels& big_cl, sim_data& sd, wildtype_feats& wtf){
 }
 
 /*
- * maximum: 1
+ * maximum: 4
  */
 int test_per2kn_scn (con_levels& big_cl, sim_data& sd, wildtype_feats& wtf){	
 	peak_trough pt;
 	// shorter period mBmal
 	find_peaks_troughs(big_cl, pt, MNB);
 	int score = check_shorter_period_behavior(pt, big_cl, sd, wtf, MNB);
-	return score;
+	if (score == MAX_SHORT_PER_BEH){
+		return MUTANT_SCN_SCORE;
+	}
+	else{
+		return 0;
+	}
 }
 
 /*
- * maximum: 5
+ * maximum: 4
  */
 int test_per3kn_scn(con_levels& big_cl, sim_data& sd, wildtype_feats& wtf){
 	peak_trough pt;
 	int score = 0;
 	// WT or shorter period mPer2
 	find_peaks_troughs(big_cl, pt, MNPT);
-	score += check_shorter_period_behavior(pt, big_cl, sd, wtf, MNPT);
-	if (score < 1){
-		score += check_wildtype_behavior(pt, big_cl, sd, wtf, MNPT);
-	}
-	else{
-		score = 4;
+	double per = calculate_average_period(pt, sd);
+	if (per <= wtf.period[1] && per >= (wtf.period[1] - SCN_P3_P2_SHORT_PER)){
+		score += MAX_SHORT_PER_BEH;
 	}
 	pt.reset();
 	
@@ -518,7 +508,7 @@ int test_per3kn_scn(con_levels& big_cl, sim_data& sd, wildtype_feats& wtf){
 }
 
 /*
- * Maximum: 2
+ * Maximum: 4
  */
 int test_cry1kn_scn(con_levels& big_cl, sim_data& sd, wildtype_feats& wtf){
 	peak_trough pt;
@@ -528,7 +518,7 @@ int test_cry1kn_scn(con_levels& big_cl, sim_data& sd, wildtype_feats& wtf){
 	if (pt.peaks.size() >= LOW_BOUND_NUM_PERIOD){
 		double per = calculate_average_period(pt, sd);
 		if (per <= (wtf.period[1] - SCN_C1_P2_SHORT_PER)){
-			score += 1;
+			score += MAX_SHORT_PER_BEH;
 		}
 		else{
 			if (sd.verbose){
@@ -551,7 +541,7 @@ int test_cry1kn_scn(con_levels& big_cl, sim_data& sd, wildtype_feats& wtf){
 }
 
 /*
- * Maximum: 2
+ * Maximum: 4
  */
 int test_cry2kn_scn(con_levels& big_cl, sim_data& sd, wildtype_feats& wtf){
 	peak_trough pt;
@@ -566,7 +556,7 @@ int test_cry2kn_scn(con_levels& big_cl, sim_data& sd, wildtype_feats& wtf){
 	if (pt.peaks.size() >= LOW_BOUND_NUM_PERIOD){
 		double per = calculate_average_period(pt, sd);
 		if (per >= (wtf.period[1] + SCN_C2_P2_LONG_PER)){
-			score += 1;
+			score += MAX_LONG_PER_BEH;
 		}
 		else{
 			if (sd.verbose){
@@ -584,7 +574,7 @@ int test_cry2kn_scn(con_levels& big_cl, sim_data& sd, wildtype_feats& wtf){
 }
 
 /*
- * Maximum: 1
+ * Maximum: 4
  */
 int test_bmalkn_scn(con_levels& big_cl, sim_data& sd, wildtype_feats& wtf){
 	peak_trough pt;
@@ -592,9 +582,14 @@ int test_bmalkn_scn(con_levels& big_cl, sim_data& sd, wildtype_feats& wtf){
 	
 	// AR mPer2
 	find_peaks_troughs(big_cl, pt, MNPT);
-	score += check_arythmic_behavior(sd, pt, big_cl, MNPT);
-	
-	return score;
+	score = check_arythmic_behavior(sd, pt, big_cl, MNPT);
+	if (score < MAX_ART_BEH){
+		score = check_shorter_period_behavior(pt, big_cl, sd, wtf, MNPT);
+	}
+	if (score < MAX_SHORT_PER_BEH){
+		return 0;
+	}
+	return MUTANT_SCN_SCORE;
 }
 
 /*
@@ -605,20 +600,25 @@ int test_npas2kn_scn(con_levels& big_cl, sim_data& sd, wildtype_feats& wtf){
 	// WT mBmal
 	find_peaks_troughs(big_cl, pt, MNB);
 	int score = check_wildtype_behavior(pt, big_cl, sd, wtf, MNB);
+	if (score < MAX_WT_BEH){
+		return 0;
+	}
 	
-	return score;
+	return MUTANT_SCN_SCORE;
 }
 
 /*
- * Maximum: 1
+ * Maximum: 4
  */
 int test_c1c2kn_scn(con_levels& big_cl, sim_data& sd, wildtype_feats& wtf){
 	peak_trough pt;
 	//AR Bmal
 	find_peaks_troughs(big_cl, pt, MNB);
 	int score = check_arythmic_behavior(sd, pt, big_cl, MNB);
-	
-	return score;
+	if (score < MAX_ART_BEH){
+		return 0;
+	}
+	return MUTANT_SCN_SCORE;
 }
 
 int test_wildtype_fib(con_levels& big_cl, sim_data& sd, wildtype_feats& wtf){

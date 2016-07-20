@@ -50,7 +50,7 @@ int main(int argc, char ** argv){
 
 	////////////////////////////////////
 	
-	rs->clear();
+	delete rs;
 	//delete_file(file_passed);
 	#if defined(MEMTRACK)
 		print_heap_usage();

@@ -130,7 +130,7 @@ bool parse_param_line (parameters& pr, int j, char* buffer_line, int& index_buff
 			exit(EXIT_INPUT_ERROR);
 		}
 		return true;
-	} else if (buffer_line[index_buffer] != '\0') { // There are more lines to try to parse
+	} else if (buffer_line[index_buffer] != '\0' && buffer_line[index_buffer] != '\n') { // There are more lines to try to parse
 		return parse_param_line(pr, j, buffer_line, index_buffer);
 	} else { // The end of the buffer was found
 		return false;
@@ -569,7 +569,7 @@ void print_concentrations (input_params& ip, sim_data& sd, con_levels& big_cl, i
 	todo:
 */
 bool not_EOL (char c) {
-	return c != '\n' && c != '\0';
+	return (c != '\n' && c != '\0' && c != EOF);
 }
 
 

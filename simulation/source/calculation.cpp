@@ -7,632 +7,217 @@ bool calculate_concentrations(input_params& ip, con_levels& cl, con_levels& big_
 	int check_index;
 	for (int j = 1 ; j< sd.steps_total; j++){
 		check_index = j % cl.big_gran;
-		for (int i = 0; i< NUM_CONS; i++ ){
-			if (i == GRB){
-				findGRB(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == G){
-				findG(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == GRSRB){
-				findGRSRB(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == GRS){
-				findGRS(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == GCR){
-				findGCR (sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == GC){
-				findGC(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == GBR){
-				findGBR(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == GB){
-				findGB(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == GBRB){
-				findGBRB(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == GBB){
-				findGBB(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == MNPO){
-				findMNPO(sim_rates, cl, j, ip.time_total, sd.step_size);
-			}
-			else if (i == MCPO){
-				findMCPO(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == MNPT){
-				findMNPT(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == MCPT){
-				findMCPT(sim_rates, cl, j, ip.time_total, sd.step_size);
-			}
-			else if (i == MNRT){
-				findMNRT(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == MCRT){
-				findMCRT(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == MNREV){
-				findMNREV(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == MCREV){
-				findMCREV(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == MNRO){
-				findMNRO(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == MCRO){
-				findMCRO(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == MNB){
-				findMNB(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == MCB){
-				findMCB(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == MNNP){
-				findMNNP(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == MCNP){
-				findMCNP(sim_rates, cl, j, sd.step_size);
-			} 
-			else if (i == B){
-				findB(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == CL){
-				findCL(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == BC){
-				findBC(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == CYREV){
-				findCYREV(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == REVN){
-				findREVN(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == CYREVG){
-				findCYREVG(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == REVNG){
-				findREVNG(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == CYREVGP){
-				findCYREVGP(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == REVNGP){
-				findREVNGP(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == CYREVP){
-				findCYREVP(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == REVNP){
-				findREVNP(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == GTO){
-				findGTO (sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X00001){
-				findX00001(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X00011){
-				findX00011(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X00100){
-				findX00100(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X00110){
-				findX00110(sim_rates, cl, j, sd.step_size);	
-			}
-			else if (i == X00200){
-				findX00200(sim_rates, cl, j, sd.step_size);	
-			}
-			else if (i == X00210){
-				findX00210(sim_rates, cl, j, sd.step_size);	
-			}
-			else if (i == X01000){
-				findX01000(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X01010){
-				findX01010(sim_rates, cl, j, sd.step_size);	
-			}
-			else if (i == X01011){
-				findX01011(sim_rates, cl, j,sd.step_size);
-			}
-			else if (i == X02000){
-				findX02000(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X02010){
-				findX02010(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X02011){
-				findX02011(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X10000){
-				findX10000(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X10100){
-				findX10100(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X20000){
-				findX20000(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X20010){
-				findX20010(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X20011){
-				findX20011(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X20100){
-				findX20100(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X20110){
-				findX20110(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X20111){
-				findX20111(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X21000){
-				findX21000(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X21010){
-				findX21010(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X21011){
-				findX21011(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X21100){
-				findX21100(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X21110){
-				findX21110(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X21111){
-				findX21111(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X22000){
-				findX22000(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X22010){
-				findX22010(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X22011){
-				findX22011(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X22100){
-				findX22100(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X22110){
-				findX22110(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X22111){
-				findX22111(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X30000){
-				findX30000(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X30100){
-				findX30100(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X30200){
-				findX30200(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X30300){
-				findX30300(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X40000){
-				findX40000(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X40010){
-				findX40010(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X40011){
-				findX40011(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X40100){
-				findX40100(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X40110){
-				findX40110(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X40111){
-				findX40111(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X40200){
-				findX40200(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X40210){
-				findX40210(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X40211){
-				findX40211(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X40300){
-				findX40300(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X40310){
-				findX40310(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X40311){
-				findX40311(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X41000){
-				findX41000(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X41010){
-				findX41010(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X41011){
-				findX41011(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X41100){
-				findX41100(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X41110){
-				findX41110(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X41111){
-				findX41111(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X41200){
-				findX41200(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X41210){
-				findX41210(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X41211){
-				findX41211(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X41300){
-				findX41300(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X41310){
-				findX41310(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X41311){
-				findX41311(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X42000){
-				findX42000(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X42010){
-				findX42010(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X42011){
-				findX42011(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X42100){
-				findX42100(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X42110){
-				findX42110(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X42111){
-				findX42111(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X42200){
-				findX42200(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X42210){
-				findX42210(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X42211){
-				findX42211(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X42300){
-				findX42300(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X42310){
-				findX42310(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X42311){
-				findX42311(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X50000){
-				findX50000(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X50010){
-				findX50010(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X50011){
-				findX50011(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X50100){
-				findX50100(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X50110){
-				findX50110(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X50111){
-				findX50111(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X50200){
-				findX50200(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X50210){
-				findX50210(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X50211){
-				findX50211(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X50300){
-				findX50300(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X50310){
-				findX50310(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X50311){
-				findX50311(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X51000){
-				findX51000(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X51010){
-				findX51010(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X51011){
-				findX51011(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X51100){
-				findX51100(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X51110){
-				findX51110(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X51111){
-				findX51111(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X51200){
-				findX51200(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X51210){
-				findX51210(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X51211){
-				findX51211(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X51300){
-				findX51300(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X51310){
-				findX51310(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X51311){
-				findX51311(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X52000){
-				findX52000(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X52010){
-				findX52010(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X52011){
-				findX52011(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X52100){
-				findX52100(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X52110){
-				findX52110(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X52111){
-				findX52111(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X52200){
-				findX52200(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X52210){
-				findX52210(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X52211){
-				findX52211(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X52300){
-				findX52300(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X52310){
-				findX52310(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X52311){
-				findX52311(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X60000){
-				findX60000(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X60010){
-				findX60010(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X60011){
-				findX60011(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X60100){
-				findX60100(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X60110){
-				findX60110(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X60111){
-				findX60111(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X60200){
-				findX60200(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X60210){
-				findX60210(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X60211){
-				findX60211(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X60300){
-				findX60300(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X60310){
-				findX60310(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X60311){
-				findX60311(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X61000){
-				findX61000(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X61010){
-				findX61010(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X61011){
-				findX61011(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X61100){
-				findX61100(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X61110){
-				findX61110(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X61111){
-				findX61111(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X61200){
-				findX61200(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X61210){
-				findX61210(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X61211){
-				findX61211(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X61300){
-				findX61300(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X61310){
-				findX61310(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X61311){
-				findX61311(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X62000){
-				findX62000(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X62010){
-				findX62010(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X62011){
-				findX62011(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X62100){
-				findX62100(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X62110){
-				findX62110(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X62111){
-				findX62111(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X62200){
-				findX62200(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X62210){
-				findX62210(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X62211){
-				findX62211(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X62300){
-				findX62300(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X62310){
-				findX62310(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X62311){
-				findX62311(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == MNPH){
-				findMNPH(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == MCPH){
-				findMCPH(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == GPH){
-				findGPH(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == GPHR){
-				findGPHR(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X70000){
-				findX70000(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X80000){
-				findX80000(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X80100){
-				findX80100(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X90000){
-				findX90000(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X90010){
-				findX90010(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X90011){
-				findX90011(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X90100){
-				findX90100(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X90110){
-				findX90110(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X90111){
-				findX90111(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == XA0000){
-				findXA0000(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == XA0010){
-				findXA0010(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == XA0011){
-				findXA0011(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == XA1010){
-				findXA1010(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == XA1011){
-				findXA1011(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == XA2010){
-				findXA2010(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == XA2011){
-				findXA2011(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == GPOR){
-				findGPOR(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == GPO){
-				findGPO(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == GPTR){
-				findGPTR(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == GPT){
-				findGPT(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == GBN){
-				findGBN(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == GBRN){
-				findGBRN(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X01002){
-				findX01002(sim_rates, cl, j, sd.step_size);
-			}
-			else if (i == X02002){
-				findX02002(sim_rates, cl, j, sd.step_size);
-			}
+		
+		findGRB(sim_rates, cl, j, sd.step_size);
+		findG(sim_rates, cl, j, sd.step_size);
+		findGRSRB(sim_rates, cl, j, sd.step_size);
+		findGRS(sim_rates, cl, j, sd.step_size);
+		findGCR (sim_rates, cl, j, sd.step_size);
+		findGC(sim_rates, cl, j, sd.step_size);
+		findGBR(sim_rates, cl, j, sd.step_size);
+		findGB(sim_rates, cl, j, sd.step_size);
+		findGBRB(sim_rates, cl, j, sd.step_size);
+		findGBB(sim_rates, cl, j, sd.step_size);
+		findMNPO(sim_rates, cl, j, ip.time_total, sd.step_size);
+		findMCPO(sim_rates, cl, j, sd.step_size);
+		findMNPT(sim_rates, cl, j, sd.step_size);
+		findMCPT(sim_rates, cl, j, ip.time_total, sd.step_size);
+		findMNRT(sim_rates, cl, j, sd.step_size);
+		findMCRT(sim_rates, cl, j, sd.step_size);
+		findMNREV(sim_rates, cl, j, sd.step_size);
+		findMCREV(sim_rates, cl, j, sd.step_size);
+		findMNRO(sim_rates, cl, j, sd.step_size);
+		findMCRO(sim_rates, cl, j, sd.step_size);
+		findMNB(sim_rates, cl, j, sd.step_size);
+		findMCB(sim_rates, cl, j, sd.step_size);
+		findMNNP(sim_rates, cl, j, sd.step_size);
+		findMCNP(sim_rates, cl, j, sd.step_size);
+		findB(sim_rates, cl, j, sd.step_size);
+		findCL(sim_rates, cl, j, sd.step_size);
+		findBC(sim_rates, cl, j, sd.step_size);
+		findCYREV(sim_rates, cl, j, sd.step_size);
+		findREVN(sim_rates, cl, j, sd.step_size);
+		findCYREVG(sim_rates, cl, j, sd.step_size);
+		findREVNG(sim_rates, cl, j, sd.step_size);
+		findCYREVGP(sim_rates, cl, j, sd.step_size);
+		findREVNGP(sim_rates, cl, j, sd.step_size);
+		findCYREVP(sim_rates, cl, j, sd.step_size);
+		findREVNP(sim_rates, cl, j, sd.step_size);
+		findGTO (sim_rates, cl, j, sd.step_size);
+		findX00001(sim_rates, cl, j, sd.step_size);
+		findX00011(sim_rates, cl, j, sd.step_size);
+		findX00100(sim_rates, cl, j, sd.step_size);
+		findX00110(sim_rates, cl, j, sd.step_size);	
+		findX00200(sim_rates, cl, j, sd.step_size);	
+		findX00210(sim_rates, cl, j, sd.step_size);	
+		findX01000(sim_rates, cl, j, sd.step_size);
+		findX01010(sim_rates, cl, j, sd.step_size);	
+		findX01011(sim_rates, cl, j,sd.step_size);
+		findX02000(sim_rates, cl, j, sd.step_size);
+		findX02010(sim_rates, cl, j, sd.step_size);
+		findX02011(sim_rates, cl, j, sd.step_size);
+		findX10000(sim_rates, cl, j, sd.step_size);
+		findX10100(sim_rates, cl, j, sd.step_size);
+		findX20000(sim_rates, cl, j, sd.step_size);
+		findX20010(sim_rates, cl, j, sd.step_size);
+		findX20011(sim_rates, cl, j, sd.step_size);
+		findX20100(sim_rates, cl, j, sd.step_size);
+		findX20110(sim_rates, cl, j, sd.step_size);
+		findX20111(sim_rates, cl, j, sd.step_size);
+		findX21000(sim_rates, cl, j, sd.step_size);
+		findX21010(sim_rates, cl, j, sd.step_size);
+		findX21011(sim_rates, cl, j, sd.step_size);
+		findX21100(sim_rates, cl, j, sd.step_size);
+		findX21110(sim_rates, cl, j, sd.step_size);
+		findX21111(sim_rates, cl, j, sd.step_size);
+		findX22000(sim_rates, cl, j, sd.step_size);
+		findX22010(sim_rates, cl, j, sd.step_size);
+		findX22011(sim_rates, cl, j, sd.step_size);
+		findX22100(sim_rates, cl, j, sd.step_size);
+		findX22110(sim_rates, cl, j, sd.step_size);
+		findX22111(sim_rates, cl, j, sd.step_size);
+		findX30000(sim_rates, cl, j, sd.step_size);
+		findX30100(sim_rates, cl, j, sd.step_size);
+		findX30200(sim_rates, cl, j, sd.step_size);
+		findX30300(sim_rates, cl, j, sd.step_size);
+		findX40000(sim_rates, cl, j, sd.step_size);
+		findX40010(sim_rates, cl, j, sd.step_size);
+		findX40011(sim_rates, cl, j, sd.step_size);
+		findX40100(sim_rates, cl, j, sd.step_size);
+		findX40110(sim_rates, cl, j, sd.step_size);
+		findX40111(sim_rates, cl, j, sd.step_size);
+		findX40200(sim_rates, cl, j, sd.step_size);
+		findX40210(sim_rates, cl, j, sd.step_size);
+		findX40211(sim_rates, cl, j, sd.step_size);
+		findX40300(sim_rates, cl, j, sd.step_size);
+		findX40310(sim_rates, cl, j, sd.step_size);
+		findX40311(sim_rates, cl, j, sd.step_size);
+		findX41000(sim_rates, cl, j, sd.step_size);
+		findX41010(sim_rates, cl, j, sd.step_size);
+		findX41011(sim_rates, cl, j, sd.step_size);
+		findX41100(sim_rates, cl, j, sd.step_size);
+		findX41110(sim_rates, cl, j, sd.step_size);
+		findX41111(sim_rates, cl, j, sd.step_size);
+		findX41200(sim_rates, cl, j, sd.step_size);
+		findX41210(sim_rates, cl, j, sd.step_size);
+		findX41211(sim_rates, cl, j, sd.step_size);
+		findX41300(sim_rates, cl, j, sd.step_size);
+		findX41310(sim_rates, cl, j, sd.step_size);
+		findX41311(sim_rates, cl, j, sd.step_size);
+		findX42000(sim_rates, cl, j, sd.step_size);
+		findX42010(sim_rates, cl, j, sd.step_size);
+		findX42011(sim_rates, cl, j, sd.step_size);
+		findX42100(sim_rates, cl, j, sd.step_size);
+		findX42110(sim_rates, cl, j, sd.step_size);
+		findX42111(sim_rates, cl, j, sd.step_size);
+		findX42200(sim_rates, cl, j, sd.step_size);
+		findX42210(sim_rates, cl, j, sd.step_size);
+		findX42211(sim_rates, cl, j, sd.step_size);
+		findX42300(sim_rates, cl, j, sd.step_size);
+		findX42310(sim_rates, cl, j, sd.step_size);
+		findX42311(sim_rates, cl, j, sd.step_size);
+		findX50000(sim_rates, cl, j, sd.step_size);
+		findX50010(sim_rates, cl, j, sd.step_size);
+		findX50011(sim_rates, cl, j, sd.step_size);
+		findX50100(sim_rates, cl, j, sd.step_size);
+		findX50110(sim_rates, cl, j, sd.step_size);
+		findX50111(sim_rates, cl, j, sd.step_size);
+		findX50200(sim_rates, cl, j, sd.step_size);
+		findX50210(sim_rates, cl, j, sd.step_size);
+		findX50211(sim_rates, cl, j, sd.step_size);
+		findX50300(sim_rates, cl, j, sd.step_size);
+		findX50310(sim_rates, cl, j, sd.step_size);
+		findX50311(sim_rates, cl, j, sd.step_size);
+		findX51000(sim_rates, cl, j, sd.step_size);
+		findX51010(sim_rates, cl, j, sd.step_size);
+		findX51011(sim_rates, cl, j, sd.step_size);
+		findX51100(sim_rates, cl, j, sd.step_size);
+		findX51110(sim_rates, cl, j, sd.step_size);
+		findX51111(sim_rates, cl, j, sd.step_size);
+		findX51200(sim_rates, cl, j, sd.step_size);
+		findX51210(sim_rates, cl, j, sd.step_size);
+		findX51211(sim_rates, cl, j, sd.step_size);
+		findX51300(sim_rates, cl, j, sd.step_size);
+		findX51310(sim_rates, cl, j, sd.step_size);
+		findX51311(sim_rates, cl, j, sd.step_size);
+		findX52000(sim_rates, cl, j, sd.step_size);
+		findX52010(sim_rates, cl, j, sd.step_size);
+		findX52011(sim_rates, cl, j, sd.step_size);
+		findX52100(sim_rates, cl, j, sd.step_size);
+		findX52110(sim_rates, cl, j, sd.step_size);
+		findX52111(sim_rates, cl, j, sd.step_size);
+		findX52200(sim_rates, cl, j, sd.step_size);
+		findX52210(sim_rates, cl, j, sd.step_size);
+		findX52211(sim_rates, cl, j, sd.step_size);
+		findX52300(sim_rates, cl, j, sd.step_size);
+		findX52310(sim_rates, cl, j, sd.step_size);
+		findX52311(sim_rates, cl, j, sd.step_size);
+		findX60000(sim_rates, cl, j, sd.step_size);
+		findX60010(sim_rates, cl, j, sd.step_size);
+		findX60011(sim_rates, cl, j, sd.step_size);
+		findX60100(sim_rates, cl, j, sd.step_size);
+		findX60110(sim_rates, cl, j, sd.step_size);
+		findX60111(sim_rates, cl, j, sd.step_size);
+		findX60200(sim_rates, cl, j, sd.step_size);
+		findX60210(sim_rates, cl, j, sd.step_size);
+		findX60211(sim_rates, cl, j, sd.step_size);
+		findX60300(sim_rates, cl, j, sd.step_size);
+		findX60310(sim_rates, cl, j, sd.step_size);
+		findX60311(sim_rates, cl, j, sd.step_size);
+		findX61000(sim_rates, cl, j, sd.step_size);
+		findX61010(sim_rates, cl, j, sd.step_size);
+		findX61011(sim_rates, cl, j, sd.step_size);
+		findX61100(sim_rates, cl, j, sd.step_size);
+		findX61110(sim_rates, cl, j, sd.step_size);
+		findX61111(sim_rates, cl, j, sd.step_size);
+		findX61200(sim_rates, cl, j, sd.step_size);
+		findX61210(sim_rates, cl, j, sd.step_size);
+		findX61211(sim_rates, cl, j, sd.step_size);
+		findX61300(sim_rates, cl, j, sd.step_size);
+		findX61310(sim_rates, cl, j, sd.step_size);
+		findX61311(sim_rates, cl, j, sd.step_size);
+		findX62000(sim_rates, cl, j, sd.step_size);
+		findX62010(sim_rates, cl, j, sd.step_size);
+		findX62011(sim_rates, cl, j, sd.step_size);
+		findX62100(sim_rates, cl, j, sd.step_size);
+		findX62110(sim_rates, cl, j, sd.step_size);
+		findX62111(sim_rates, cl, j, sd.step_size);
+		findX62200(sim_rates, cl, j, sd.step_size);
+		findX62210(sim_rates, cl, j, sd.step_size);
+		findX62211(sim_rates, cl, j, sd.step_size);
+		findX62300(sim_rates, cl, j, sd.step_size);
+		findX62310(sim_rates, cl, j, sd.step_size);
+		findX62311(sim_rates, cl, j, sd.step_size);
+		findMNPH(sim_rates, cl, j, sd.step_size);
+		findMCPH(sim_rates, cl, j, sd.step_size);
+		findGPH(sim_rates, cl, j, sd.step_size);
+		findGPHR(sim_rates, cl, j, sd.step_size);
+		findX70000(sim_rates, cl, j, sd.step_size);
+		findX80000(sim_rates, cl, j, sd.step_size);
+		findX80100(sim_rates, cl, j, sd.step_size);
+		findX90000(sim_rates, cl, j, sd.step_size);
+		findX90010(sim_rates, cl, j, sd.step_size);
+		findX90011(sim_rates, cl, j, sd.step_size);
+		findX90100(sim_rates, cl, j, sd.step_size);
+		findX90110(sim_rates, cl, j, sd.step_size);
+		findX90111(sim_rates, cl, j, sd.step_size);
+		findXA0000(sim_rates, cl, j, sd.step_size);
+		findXA0010(sim_rates, cl, j, sd.step_size);
+		findXA0011(sim_rates, cl, j, sd.step_size);
+		findXA1010(sim_rates, cl, j, sd.step_size);
+		findXA1011(sim_rates, cl, j, sd.step_size);
+		findXA2010(sim_rates, cl, j, sd.step_size);
+		findXA2011(sim_rates, cl, j, sd.step_size);
+		findGPOR(sim_rates, cl, j, sd.step_size);
+		findGPO(sim_rates, cl, j, sd.step_size);
+		findGPTR(sim_rates, cl, j, sd.step_size);
+		findGPT(sim_rates, cl, j, sd.step_size);
+		findGBN(sim_rates, cl, j, sd.step_size);
+		findGBRN(sim_rates, cl, j, sd.step_size);
+		findX01002(sim_rates, cl, j, sd.step_size);
+		findX02002(sim_rates, cl, j, sd.step_size);
 			
+		for (int i = 0; i< NUM_CONS; i++ ){
 			//// Check for nan value/////
 			if (isnan(cl.data[i][check_index])){
 				valid = false;
@@ -1450,7 +1035,7 @@ void findX20010(double * rs, con_levels& cl, int c, double ss){
 						+ rs[DC] * cl.data[X20110][p]
 						+ rs[DR] * (cl.data[X21010][p] + cl.data[X22010][p])
 						+ rs[DR] * (cl.data[X21011][p] + cl.data[X22011][p])
-						- rs[AN] * rs[NF] * px * (cl.data[XA0010][p] + cl.data[XA0011])
+						- rs[AN] * rs[NF] * px * (cl.data[XA0010][p] + cl.data[XA0011][p])
 						+ rs[DN] * (cl.data[X90010][p] + cl.data[X90011][p]))
 						+ px;
 }
