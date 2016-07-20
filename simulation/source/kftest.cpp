@@ -95,7 +95,7 @@ int test_average_period (peak_trough & pt, sim_data& sd, double * report){
 	total_period /= (pt.peaks.size() - 1);
 	
 	if (sd.cell_type == SCN){
-		if (MIN_PERIOD_SCN < total_period  && total_period < MAX_PERIOD_SCN){
+		if (MIN_PERIOD_SCN <= total_period  && total_period <= MAX_PERIOD_SCN){
 			score += MAX_AVG_PER_BEH;
 		}
 		else {
@@ -249,10 +249,10 @@ int check_wildtype_behavior(peak_trough& pt, con_levels& big_cl, sim_data& sd, w
 		return 0;
 	}
 	
-	amp = calculate_average_amplitude(pt, big_cl, con_index);
-	
 	double wt_per = wtf.period[wtf_index];
 	double wt_amp = wtf.amplitude[wtf_index];
+	per = calculate_average_period(pt, sd);
+	amp = calculate_average_amplitude(pt, big_cl, con_index);
 	// period of mt is 1% error from period wt
 	if (per <= (UP_WT_PER_ERROR * wt_per) && per >= (LOW_WT_PER_ERROR * wt_per)){
 		score += 1;
