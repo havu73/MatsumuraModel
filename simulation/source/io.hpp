@@ -17,10 +17,11 @@ void parse_ranges_file (pair <double, double> [], char* );
 void open_file (ofstream*, char* , bool);
 void close_if_open (ofstream*);
 void print_concentrations (input_params&, sim_data&, con_levels& , int, int);
+char * create_concentrations_file_name(input_params&, int, int);
 bool not_EOL (char);
 void write_pipe (double*, double*, double*, input_params&, sim_data&);
 void write_pipe_double (int, double);
-void create_set_directory (int);
+void create_set_directory (int, input_params&);
 void create_passed_file (input_params&);
 void print_good_set(input_params&, parameters&, int);
 #endif

@@ -324,9 +324,21 @@
 
 // Macros for filenames
 #define WT_FNAME				"wildtype.txt"
-#define P1_FNAME				"per1Knockout.txt"
-#define P2_FNAME				"per2Knockout.txt"
-#define P3_FNAME				"per3Knockout.txt"
+#define P1_FNAME				"per1KnockDown.txt"
+#define P2_FNAME				"per2KnockDown.txt"
+#define P3_FNAME				"per3KnockDown.txt"
+#define C1_FNAME				"cry1KnockDown.txt"
+#define C2_FNAME				"cry2KnockDown.txt"
+#define BM_FNAME				"bMalKnockDown.txt"
+#define NP_FNAME				"nPasKnockDown.txt"
+#define C1C2_FNAME				"c1c2KnockDown.txt"
+#define P2C1_FNAME				"p2c1KnockDown.txt"
+#define P2C2_FNAME				"p2c2KnockDown.txt"
+#define R_FNAME					"revKnockDown.txt"
+
+// Macros for directory_name based on cell type (scn or fib). Directory names would be like: set_0_scn or set_0_fib
+#define DIR_NAME_SCN			"scn"
+#define DIR_NAME_FIB			"fib"
 
 // Macros for mutant index
 #define	WT						0

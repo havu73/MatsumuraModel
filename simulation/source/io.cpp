@@ -463,102 +463,162 @@ void close_if_open (ofstream* file) {
 void print_concentrations (input_params& ip, sim_data& sd, con_levels& big_cl, int set_num, int mutant_index) {
 	double ** data = big_cl.data;
 	if (ip.print_cons) { // Print the concentrations only if the user specified it
-		int strlen_set_num = INT_STRLEN(set_num); // How many bytes the ASCII representation of set_num takes
-		char* str_set_num = (char*)mallocate(sizeof(char) * (strlen_set_num + 1));
-		sprintf(str_set_num, "%d", set_num);
-		char* filename_set = NULL;
-		if (mutant_index == WT){
-			filename_set = (char*)mallocate(sizeof(char) * ( strlen("./set_") + strlen_set_num + strlen(WT_FNAME) + 1));
-			sprintf(filename_set, "./set_%s/%s", str_set_num, WT_FNAME);
-		}
 
-		else if (mutant_index == P1){
-			filename_set = (char*)mallocate(sizeof(char) * ( strlen("./set_") + strlen_set_num + strlen(P1_FNAME) + 1));
-			sprintf(filename_set, "./set_%s/%s", str_set_num, P1_FNAME);
-		}
-
-		else if (mutant_index == P2){
-			filename_set = (char*)mallocate(sizeof(char) * ( strlen("./set_") + strlen_set_num + strlen(P2_FNAME) + 1));
-			sprintf(filename_set, "./set_%s/%s", str_set_num, P2_FNAME);
-		}
-
-		else if (mutant_index == P3){
-			filename_set = (char*)mallocate(sizeof(char) * ( strlen("./set_") + strlen_set_num + strlen(P3_FNAME) + 1));
-			sprintf(filename_set, "./set_%s/%s", str_set_num, P3_FNAME);
-		}
-		
+		char* filename_set = create_concentrations_file_name(ip, set_num, mutant_index);
 		
 		cout << "    "; // Offset the open_file message to preserve horizontal spacing
 		ofstream file_cons;
 		open_file(&file_cons, filename_set, true);
 	
 		free(filename_set);
-		free(str_set_num);
 		
 		int print_steps = sd.steps_total / sd.big_gran;
 		double time_interval = sd.step_size * sd.big_gran;
 		double time = 0;
 		double con;
 		if (ip.binary_cons_output) {
-			if (mutant_index == WT){
-				for (int j = 0; j < print_steps; j++) {
-					time = j * time_interval;
-					file_cons.write((char*)(&time), sizeof(double));
-					for (int i = 0; i < NUM_CONS; i++) {
-						con = data[i][j];
-						file_cons.write((char*)(&con), sizeof(double));
-					}
-					file_cons << "\n";
-				}
-			}
-			else {
-				for (int j = 0; j < print_steps; j++) {
-					time = j * time_interval;
-					file_cons.write((char*)(&time), sizeof(double));
-					con = data[MNPO][j];
-					file_cons.write((char*)(&con), sizeof(double));
-					con = data[MCPO][j];
-					file_cons.write((char*)(&con), sizeof(double));
-					con = data[MNPT][j];
-					file_cons.write((char*)(&con), sizeof(double));
-					con = data[MCPT][j];
-					file_cons.write((char*)(&con), sizeof(double));
-					con = data[MNPH][j];
-					file_cons.write((char*)(&con), sizeof(double));
-					con = data[MCPH][j];
-					file_cons.write((char*)(&con), sizeof(double));
-					file_cons << "\n";
-				}
+			for (int j = 0; j < print_steps; j++) {
+				time = j * time_interval;
+				file_cons.write((char*)(&time), sizeof(double));
+				con = data[MNPO][j];
+				file_cons.write((char*)(&con), sizeof(double));
+				con = data[MCPO][j];
+				file_cons.write((char*)(&con), sizeof(double));
+				con = data[MNPT][j];
+				file_cons.write((char*)(&con), sizeof(double));
+				con = data[MCPT][j];
+				file_cons.write((char*)(&con), sizeof(double));
+				con = data[MNPH][j];
+				file_cons.write((char*)(&con), sizeof(double));
+				con = data[MCPH][j];
+				file_cons.write((char*)(&con), sizeof(double));
+				con = data[MNB][j];
+				file_cons.write((char*)(&con), sizeof(double));
+				con = data[MCB][j];
+				file_cons.write((char*)(&con), sizeof(double));
+				file_cons << "\n";
 			}
 			
 		} else {
-			if (mutant_index == WT){
-				for (int j = 0; j < print_steps; j++) {
-					time = j * time_interval;
-					file_cons << time << " ";
-					for (int i = 0; i < NUM_CONS ; i++) {
-						file_cons << data[i][j] << " ";
-					}
-					file_cons << "\n";
-				}
-			}
-			else{
-				for (int j = 0; j < print_steps; j++) {
-					time = j * time_interval;
-					file_cons << time << " ";
-					file_cons << data[MNPO][j] << " ";
-					file_cons << data[MCPO][j] << " ";
-					file_cons << data[MNPT][j] << " ";
-					file_cons << data[MCPT][j] << " ";
-					file_cons << data[MNPH][j] << " ";
-					file_cons << data[MCPH][j] << " ";
-					file_cons << "\n";
-				}
+			for (int j = 0; j < print_steps; j++) {
+				time = j * time_interval;
+				file_cons << time << " ";
+				file_cons << data[MNPO][j] << " ";
+				file_cons << data[MCPO][j] << " ";
+				file_cons << data[MNPT][j] << " ";
+				file_cons << data[MCPT][j] << " ";
+				file_cons << data[MNPH][j] << " ";
+				file_cons << data[MCPH][j] << " ";
+				file_cons << data[MNB][j] << " ";
+				file_cons << data[MCB][j] << " ";
+				file_cons << "\n";
 			}
 		}
 	}
 }
 
+char * create_concentrations_file_name(input_params& ip, int set_num, int mutant_index){
+	int strlen_set_num = INT_STRLEN(set_num); // How many bytes the ASCII representation of set_num takes
+	char* str_set_num = (char*)mallocate(sizeof(char) * (strlen_set_num + 1));
+	sprintf(str_set_num, "%d", set_num);
+	char* filename_set = NULL;
+	if (ip.cell_type == SCN){
+		if (mutant_index == WT){
+			filename_set = (char*)mallocate(sizeof(char) * ( strlen("./set_") + strlen_set_num + strlen("_") + strlen(DIR_NAME_SCN) + strlen(WT_FNAME) + 1));
+			sprintf(filename_set, "./set_%s_%s/%s", str_set_num, DIR_NAME_SCN, WT_FNAME);
+		}
+		else if (mutant_index == P1){
+			filename_set = (char*)mallocate(sizeof(char) * ( strlen("./set_") + strlen_set_num + strlen("_") + strlen(DIR_NAME_SCN) + strlen(P1_FNAME) + 1));
+			sprintf(filename_set, "./set_%s_%s/%s", str_set_num, DIR_NAME_SCN, P1_FNAME);
+		}
+	
+		else if (mutant_index == P2){
+			filename_set = (char*)mallocate(sizeof(char) * ( strlen("./set_") + strlen_set_num + strlen("_") + strlen(DIR_NAME_SCN) + strlen(P2_FNAME) + 1));
+			sprintf(filename_set, "./set_%s_%s/%s", str_set_num, DIR_NAME_SCN, P2_FNAME);
+		}
+	
+		else if (mutant_index == P3){
+			filename_set = (char*)mallocate(sizeof(char) * ( strlen("./set_") + strlen_set_num + strlen("_") + strlen(DIR_NAME_SCN) + strlen(P3_FNAME) + 1));
+			sprintf(filename_set, "./set_%s_%s/%s", str_set_num, DIR_NAME_SCN, P3_FNAME);
+		}
+		else if (mutant_index == C1){
+			filename_set = (char*)mallocate(sizeof(char) * ( strlen("./set_") + strlen_set_num + strlen("_") + strlen(DIR_NAME_SCN) + strlen(C1_FNAME) + 1));
+			sprintf(filename_set, "./set_%s_%s/%s", str_set_num, DIR_NAME_SCN, C1_FNAME);
+		}
+		else if (mutant_index == C2){
+			filename_set = (char*)mallocate(sizeof(char) * ( strlen("./set_") + strlen_set_num + strlen("_") + strlen(DIR_NAME_SCN) + strlen(C2_FNAME) + 1));
+			sprintf(filename_set, "./set_%s_%s/%s", str_set_num, DIR_NAME_SCN, C2_FNAME);
+		}
+		else if (mutant_index == BM){
+			filename_set = (char*)mallocate(sizeof(char) * ( strlen("./set_") + strlen_set_num + strlen("_") + strlen(DIR_NAME_SCN) + strlen(BM_FNAME) + 1));
+			sprintf(filename_set, "./set_%s_%s/%s", str_set_num, DIR_NAME_SCN, BM_FNAME);
+		}
+		else if (mutant_index == NP){
+			filename_set = (char*)mallocate(sizeof(char) * ( strlen("./set_") + strlen_set_num + strlen("_") + strlen(DIR_NAME_SCN) + strlen(NP_FNAME) + 1));
+			sprintf(filename_set, "./set_%s_%s/%s", str_set_num, DIR_NAME_SCN, NP_FNAME);
+		}
+		else if (mutant_index == C1C2){
+			filename_set = (char*)mallocate(sizeof(char) * ( strlen("./set_") + strlen_set_num + strlen("_") + strlen(DIR_NAME_SCN) + strlen(C1C2_FNAME) + 1));
+			sprintf(filename_set, "./set_%s_%s/%s", str_set_num, DIR_NAME_SCN, C1C2_FNAME);
+		}
+	}
+	else if (ip.cell_type == FIB){
+		if (mutant_index == WT){
+			filename_set = (char*)mallocate(sizeof(char) * ( strlen("./set_") + strlen_set_num + strlen("_") + strlen(DIR_NAME_FIB) + strlen(WT_FNAME) + 1));
+			sprintf(filename_set, "./set_%s_%s/%s", str_set_num, DIR_NAME_FIB, WT_FNAME);
+		}
+		else if (mutant_index == P1){
+			filename_set = (char*)mallocate(sizeof(char) * ( strlen("./set_") + strlen_set_num + strlen("_") + strlen(DIR_NAME_FIB) + strlen(P1_FNAME) + 1));
+			sprintf(filename_set, "./set_%s_%s/%s", str_set_num, DIR_NAME_FIB, P1_FNAME);
+		}
+	
+		else if (mutant_index == P2){
+			filename_set = (char*)mallocate(sizeof(char) * ( strlen("./set_") + strlen_set_num + strlen("_") + strlen(DIR_NAME_FIB) + strlen(P2_FNAME) + 1));
+			sprintf(filename_set, "./set_%s_%s/%s", str_set_num, DIR_NAME_FIB, P2_FNAME);
+		}
+	
+		else if (mutant_index == P3){
+			filename_set = (char*)mallocate(sizeof(char) * ( strlen("./set_") + strlen_set_num + strlen("_") + strlen(DIR_NAME_FIB) + strlen(P3_FNAME) + 1));
+			sprintf(filename_set, "./set_%s_%s/%s", str_set_num, DIR_NAME_FIB, P3_FNAME);
+		}
+		else if (mutant_index == C1){
+			filename_set = (char*)mallocate(sizeof(char) * ( strlen("./set_") + strlen_set_num + strlen("_") + strlen(DIR_NAME_FIB) + strlen(C1_FNAME) + 1));
+			sprintf(filename_set, "./set_%s_%s/%s", str_set_num, DIR_NAME_FIB, C1_FNAME);
+		}
+		else if (mutant_index == C2){
+			filename_set = (char*)mallocate(sizeof(char) * ( strlen("./set_") + strlen_set_num + strlen("_") + strlen(DIR_NAME_FIB) + strlen(C2_FNAME) + 1));
+			sprintf(filename_set, "./set_%s_%s/%s", str_set_num, DIR_NAME_FIB, C2_FNAME);
+		}
+		else if (mutant_index == BM){
+			filename_set = (char*)mallocate(sizeof(char) * ( strlen("./set_") + strlen_set_num + strlen("_") + strlen(DIR_NAME_FIB) + strlen(BM_FNAME) + 1));
+			sprintf(filename_set, "./set_%s_%s/%s", str_set_num, DIR_NAME_FIB, BM_FNAME);
+		}
+		else if (mutant_index == NP){
+			filename_set = (char*)mallocate(sizeof(char) * ( strlen("./set_") + strlen_set_num + strlen("_") + strlen(DIR_NAME_FIB) + strlen(NP_FNAME) + 1));
+			sprintf(filename_set, "./set_%s_%s/%s", str_set_num, DIR_NAME_FIB, NP_FNAME);
+		}
+		else if (mutant_index == C1C2){
+			filename_set = (char*)mallocate(sizeof(char) * ( strlen("./set_") + strlen_set_num + strlen("_") + strlen(DIR_NAME_FIB) + strlen(C1C2_FNAME) + 1));
+			sprintf(filename_set, "./set_%s_%s/%s", str_set_num, DIR_NAME_FIB, C1C2_FNAME);
+		}
+		else if (mutant_index == P2C1){
+			filename_set = (char*)mallocate(sizeof(char) * ( strlen("./set_") + strlen_set_num + strlen("_") + strlen(DIR_NAME_FIB) + strlen(P2C1_FNAME) + 1));
+			sprintf(filename_set, "./set_%s_%s/%s", str_set_num, DIR_NAME_FIB, P2C1_FNAME);
+		}
+		else if (mutant_index == P2C2){
+			filename_set = (char*)mallocate(sizeof(char) * ( strlen("./set_") + strlen_set_num + strlen("_") + strlen(DIR_NAME_FIB) + strlen(P2C2_FNAME) + 1));
+			sprintf(filename_set, "./set_%s_%s/%s", str_set_num, DIR_NAME_FIB, P2C2_FNAME);
+		}
+		else if (mutant_index == R){
+			filename_set = (char*)mallocate(sizeof(char) * ( strlen("./set_") + strlen_set_num + strlen("_") + strlen(DIR_NAME_FIB) + strlen(R_FNAME) + 1));
+			sprintf(filename_set, "./set_%s_%s/%s", str_set_num, DIR_NAME_FIB, R_FNAME);
+		}
+	}
+	cout << filename_set<< endl;
+	
+	free(str_set_num);
+	return filename_set;
+}
 
 /* not_EOL returns whether or not a given character is the end of a line or file (i.e. '\n' or '\0', respectively)
 	parameters:
@@ -625,14 +685,25 @@ void write_pipe_double (int fd, double value) {
 	}
 }
 
-void create_set_directory (int set_index){
-	cout << term->blue << "Creating set_" << set_index << " directory if necessary . . . " << endl;
+void create_set_directory (int set_index, input_params& ip){
 	char * dir_name = new char[20];
-	sprintf(dir_name, "set_%d", set_index);
-	if (mkdir(dir_name, 0775) != 0 && errno != EEXIST){
-		cout << term->red << "Couldn't create '" << dir_name << "' directory!" << term->reset << endl;
-		delete [] dir_name;
-		exit(EXIT_FILE_WRITE_ERROR);
+	if (ip.cell_type == SCN){
+		cout << term->blue << "Creating set_" << set_index << "_scn" << " directory if necessary . . . " << endl;
+		sprintf(dir_name, "set_%d_%s", set_index, DIR_NAME_SCN);
+		if (mkdir(dir_name, 0775) != 0 && errno != EEXIST){
+			cout << term->red << "Couldn't create '" << dir_name << "' directory!" << term->reset << endl;
+			delete [] dir_name;
+			exit(EXIT_FILE_WRITE_ERROR);
+		}
+	}
+	else if (ip.cell_type == FIB){
+		cout << term->blue << "Creating set_" << set_index << "_fib" << " directory if necessary . . . " << endl;
+		sprintf(dir_name, "set_%d_%s", set_index, DIR_NAME_FIB);
+		if (mkdir(dir_name, 0775) != 0 && errno != EEXIST){
+			cout << term->red << "Couldn't create '" << dir_name << "' directory!" << term->reset << endl;
+			delete [] dir_name;
+			exit(EXIT_FILE_WRITE_ERROR);
+		}
 	}
 	delete [] dir_name;
 }
