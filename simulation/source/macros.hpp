@@ -372,6 +372,7 @@
 #define MAX_LONG_AMP_BEH		2
 #define MAX_ART_BEH				2
 #define MUTANT_SCN_SCORE		4
+#define MAX_RHYTHM_BEH			2
 
 // Macros about maximum score of a cell
 #define MAX_WT_SCN				4
@@ -388,19 +389,19 @@
 #define MAX_R_SCN				0
 #define MAX_SCN					36
 
-#define MAX_WT_FIB				6
-#define MAX_P1_FIB				5
-#define MAX_P2_FIB				1
-#define MAX_P3_FIB				2
-#define MAX_C1_FIB				2
-#define MAX_C2_FIB				3
-#define MAX_BM_FIB				1
+#define MAX_WT_FIB				4
+#define MAX_P1_FIB				4
+#define MAX_P2_FIB				4
+#define MAX_P3_FIB				4
+#define MAX_C1_FIB				4
+#define MAX_C2_FIB				6
+#define MAX_BM_FIB				4
 #define MAX_NP_FIB				4
-#define MAX_C1C2_FIB			1
-#define MAX_P2C1_FIB			1
-#define MAX_P2C2_FIB			1
-#define MAX_R_FIB				1
-#define MAX_FIB					28
+#define MAX_C1C2_FIB			4
+#define MAX_P2C1_FIB			2
+#define MAX_P2C2_FIB			2
+#define MAX_R_FIB				4
+#define MAX_FIB					46
 
 
 

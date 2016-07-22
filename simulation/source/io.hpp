@@ -5,7 +5,6 @@
 void store_filename (char**,const char*);
 void read_pipe (parameters& , input_params&);
 void read_pipe_int (int, int* );
-void read_pipe_set (int, double[]);
 void read_file (input_data* ifd);
 bool parse_param_line (parameters&, int, char*, int& );
 void parse_experiment_data_size(input_params&, input_data&, int*, int*); 

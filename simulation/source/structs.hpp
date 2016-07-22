@@ -170,13 +170,10 @@ struct input_params {
 	char* ranges_file; // The path and name of the parameter ranges file, default=none
 	bool read_ranges; // Whether or not to read the ranges file, default=false
 	char* passed_file; // The path and name of the passed file, default=output.passed
-	ofstream* passed_stream; // The ofstream of the file that contains all parameter sets that pass all conditions 
+	ofstream* passed_stream; // The ofstream of the file that contains all parameter sets that pass  
 	bool print_passed; // Whether or not to print the passed file, default=false
-	char* dir_path; // The path of the output directory for concentrations or oscillation features, default=none
 	bool print_cons; // Whether or not to print concentrations, default=false
 	bool binary_cons_output; // Whether or not to print the binary or ASCII value of numbers in the concentrations output files
-	char* features_file; // The path and file of the features file, default=none
-	bool print_features; // Whether or not to print general features file, default=false
 	
 	// Sets
 	int num_sets; // The number of parameter sets to simulate, default=1
@@ -234,11 +231,8 @@ struct input_params {
 		this->print_passed = false;
 		this->passed_stream = new ofstream();
 		this->print_passed = false;
-		this->dir_path = new char [30];
 		this->print_cons = false;
 		this->binary_cons_output = false;
-		this->features_file = new char [30];
-		this->print_features = false;
 		
 		//timing
 		this->num_sets = 1;
@@ -289,8 +283,6 @@ struct input_params {
 	~input_params () {
 		delete [] this->params_file;
 		delete [] this->passed_file;
-		delete [] this->dir_path;
-		delete [] this->features_file;
 		delete [] this->seed_file;
 		delete this->null_stream;
 		delete this->passed_stream;
@@ -575,14 +567,9 @@ struct peak_trough {
 struct wildtype_feats{
 	double * period;	// an array storing average wild type period of species we care about
 	double * amplitude; // an array storing average wild type amplitude of species we care about
-	int * species_index; // an array storing the index of species we care about, which should corresponds to period and amplitude
 	int num_species; // total number of species we care about
 	explicit wildtype_feats(){
 		this->num_species = 3; // we care about MNPO, MNPT, MNB
-		this->species_index = new int [3];
-		this->species_index[0] = MNPO;
-		this->species_index[1] = MNPT;
-		this->species_index[2] = MNB;
 		this->period = new double[3];
 		memset(this->period, 0, sizeof(double) * 3);
 		this->amplitude = new double [3];

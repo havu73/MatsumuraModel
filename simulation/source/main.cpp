@@ -7,6 +7,10 @@
 using namespace std;
 extern terminal * term;
 
+/* 1, Set up environment (most functions in this part is in init.cpp)
+ * 2, SIMULATE ALL PARAMS (in sim.cpp)
+ * 3, Delete structures stored on heap
+ */
 int main(int argc, char ** argv){
 	// Initialize the program's terminal functionality and input parameters
 	input_params ip;
@@ -35,12 +39,20 @@ int main(int argc, char ** argv){
 	sim_data sd(ip);
 	rates* rs = new rates();
 	
+	//decare ed structs to store experimental data if specified by users
 	exp_data ed;
 	if (ip.compare_exp_data){
 		input_data experiment_data(ip.exp_data_file);
 		read_experiment_data(ip, experiment_data, ed);
 	}
 	
+	//If we simulate a lot of parameter sets and want to keep records of sets with difference from exp_data below a certain amount (ip.exp_diff_thres)
+	//We will print out that set. 
+	//We call print_good_set (io.cpp) from functions in sim.cpp
+	//Please note that this functions is usually not used, so we have not decided whether the passed_file should used to print sets below ip.exp_diff_thres
+	//(the difference is determined by cost function in kftest.cpp), or to print below a certain condition points.
+	//Right now users cannot really use this functionality without adding some lines of code in sim.cpp.
+	//We can do it in the future if need be.   
 	if (ip.print_passed){
 		create_passed_file(ip);
 	}
@@ -60,7 +72,9 @@ int main(int argc, char ** argv){
 	return EXIT_SUCCESS;
 }
 
-
+/* Usage is called whenenver we encounter users' input problem to help users understand where in their input they went wrong
+ * Mostly used in functions in init.cpp
+ */
 void usage (const char* message) {
 	cout << endl;
 	bool error = message != NULL && message[0] != '\0';
@@ -69,7 +83,6 @@ void usage (const char* message) {
 	}
 	cout << "Usage: [-option [value]]. . . [--option [value]]. . ." << endl;
 	cout << "-i, --params-file        [filename]   : the relative filename of the parameter sets input file, default=none" << endl;
-	cout << "-o, --print-passed       [filename]   : the relative filename of the passed sets output file, default=none" << endl;
 	cout << "-t, --print-cons         [N/A]        : print concentration values to the specified output directory, default=unused" << endl;
 	cout << "-B, --binary-cons-output [N/A]        : print concentration values as binary numbers rather than ASCII, default=unused" << endl;
 	cout << "-D, --directory-path     [directory]  : the relative directory where concentrations or anterior oscillation features files will be printed, default=none" << endl;
@@ -106,7 +119,7 @@ void usage (const char* message) {
 
 void licensing () {
 	cout << endl;
-	cout << "Simulation for -----------" << endl;
+	cout << "Simulation for Human Circadian Clock" << endl;
 	cout << "Copyright (C) 2016 ---------------" << endl;
 	cout << "This program comes with ABSOLUTELY NO WARRANTY" << endl;
 	cout << "This is free software, and you are welcome to redistribute it under certain conditions;" << endl;

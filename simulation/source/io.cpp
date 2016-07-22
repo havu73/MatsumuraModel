@@ -10,10 +10,25 @@
 #include "main.hpp"
 #include "macros.hpp"
 extern terminal* term;
+/* copy string from value to field.
+ * Used in accept_input_params (init.cpp) to store users' input files names into corresponding field in ip
+ * Ex: store_filename(&(ip.passed_file_name), value)
+ * Params: field: pointers to an array of characters, most likely pointers to a field in ip
+ * 		   value: an array of char (from users' arguments)
+ */
 void store_filename (char** field, const char* value) {
 	strcpy(*field, value);
 }
 
+/* Read parameters from pipe, and store into pr structure. Used when sres sends parameters into simulation. 
+ * Params: pr: structure declared in main (main.cpp) to store parameters
+ * 		   ip: input params created and modified in main (main.cpp), containing file descriptors to get input (ip.pipe)in)
+ * Notes: in sres, the first number we pipe in it the total number of rates, so the first number we check here
+ * is also the number of rates, if this number is not NUM_RATES (macros.hpp), program will be frozen. 
+ * in sres, the second number piped in is the number of param set (1), so the second number we read from pipe is the number of param sets,
+ * stored in ip.num_sets
+ * Next, we read the parameters.
+ */
 void read_pipe (parameters& pr, input_params& ip) {
 	// Read how many rates per set will be piped in
 	int num_pars = 0;
@@ -31,7 +46,7 @@ void read_pipe (parameters& pr, input_params& ip) {
 		exit(EXIT_INPUT_ERROR);
 	}
 	
-	// Read every set and store it as an array of doubles
+	// Read every set and store into pr.data
 	for (int i = 0; i < ip.num_sets; i++) {
 		if (read(ip.pipe_in, pr.data[i], sizeof(double) * NUM_RATES) == -1){
 			term->failed_pipe_read();
@@ -40,6 +55,11 @@ void read_pipe (parameters& pr, input_params& ip) {
 	}
 }
 
+/* read int from file descriptor fd and store that number into int pointer address
+ * Helper function of read_pipe (io.cpp)
+ * params: fd: file descriptor, most likely ip.pipe_in
+ * 		
+ */
 void read_pipe_int (int fd, int* address) {
 	if (read(fd, address, sizeof(int)) == -1) {
 		term->failed_pipe_read();
@@ -47,15 +67,10 @@ void read_pipe_int (int fd, int* address) {
 	}
 }
 
-void read_pipe_set (int fd, double pars[]) {
-
-	if (read(fd, pars, sizeof(double) * NUM_RATES) == -1){
-		term->failed_pipe_read();
-		exit(EXIT_PIPE_READ_ERROR);
-	}
-	
-}
-
+/* Put the file's content into input_data* ifd.buffer
+ * Called in read_experiment_data, read_sim_data (init.cpp) to read users' file input
+ * Params: input_data* structure declared in main(main.cpp)
+ */
 void read_file (input_data* ifd) {
 	cout << term->blue << "Reading file " << term->reset << ifd->filename << " . . . ";
 	// Open the file for reading
@@ -137,6 +152,14 @@ bool parse_param_line (parameters& pr, int j, char* buffer_line, int& index_buff
 	}
 }
 
+/* 
+ * Get the number of species and time steps that we have experimental data for in experimental data file
+ * Store into int* cons, int* steps
+ * Params: ip, exp: the input_data containing experimental data file declared in main(main.cpp), 
+ * 		   cons and steps: pointers to int to store the size of experimental data sets, which will be used to declare the size of expermental_data structure
+ * 		   in main (main.cpp). 
+ * Called in read_exp_data (init.cpp)
+ */
 void parse_experiment_data_size(input_params& ip, input_data& exp, int* cons, int* steps){
 	static const char* usage_message = "There was an error reading the SIZE of the given experimental data set file.";
 	int i = exp.index;
@@ -151,6 +174,7 @@ void parse_experiment_data_size(input_params& ip, input_data& exp, int* cons, in
 		}
 	}
 	
+	//scan the number of species and put into cons
 	if (sscanf(exp.buffer + line_start, "%d", cons) < 1){
 		usage(usage_message);
 	}
@@ -168,18 +192,23 @@ void parse_experiment_data_size(input_params& ip, input_data& exp, int* cons, in
 			exp.index = i; 
 		}
 	}
+	//scan the number of time steps and put into steps
 	if (sscanf(exp.buffer + line_start, "%d", steps) < 1){
 		usage(usage_message);
 	}
 	exp.index = i + 1;
 }
 
+/* Parse the third line in experimental data file, which contains the name and order of species we have data for. 
+ * The indices of species that we have experimental data for will be stored in ed.con_index (arrays of indices)
+ * Called by read_experimental_data (init.cpp)
+ */
 void parse_experiment_data_title(input_data& exp, exp_data& ed){
 	static const char* usage_message = "There was an error reading the TITLE LINE of the given experimental data set file.";
 	int i = exp.index;
 	int start_read = i;
-	char* title_line = new char [1000];
-	char * title_name; 
+	char* title_line = new char [1000]; // the title line in experimental data file
+	char * title_name; // the name of the species we process
 	int j = 0; // index of the concentrations we will put into ed.con_index 
 	for (; not_EOL(exp.buffer[i]); i ++){
 		if (exp.buffer[i] == '#'){ //Skip any lines starting with #
@@ -197,14 +226,16 @@ void parse_experiment_data_title(input_data& exp, exp_data& ed){
 			usage(usage_message);
 		}
 		title_name = strtok(title_line, ",");
+		// The first term in the title line should be TIME.
 		if (strcmp(title_name, "TIME") != 0){
 			cout << term->red << "The first term in your experiment_data file should be TIME"<< term->reset<< endl;
 			exit(EXIT_INPUT_ERROR);
-		}
+		} 
+		// calling strtok to get each of the species' name separated from each other by ','
 		while(title_name != NULL){
 			title_name = strtok(NULL, ", \n" );
 			if (title_name != NULL){
-				get_experiment_data_title(title_name, ed, j);
+				get_experiment_data_title(title_name, ed, j);//to get the index of the species from the title name.
 				j ++;
 			}
 		}
@@ -213,10 +244,18 @@ void parse_experiment_data_title(input_data& exp, exp_data& ed){
 		cout << term->red << "The number of concentrations found in title line of your experimental data input(" << term->reset << j << term->red << "), which does not match with your provided experimental data num of concentrations("<< term->reset << ed.num_cons << term->red << ")" << term->reset << endl;
 		exit(EXIT_INPUT_ERROR); 
 	}
+	// Delete strings stored on heap
 	delete [] title_line;
 	delete title_name;
 }
 
+/* Helper function for parse_experiment_data (io.cpp)
+ * Params: content_name: the string (array of char s) that is the name of the species
+ * 		   ed: the exp_data structure to store the index into ed.con_index
+ * 		   j: the index of where to store the index of the species in ed.con_index
+ * Notes: Right now we only support some species, see the code and README for details
+ * 		  if need be adding new experimental data species, have to add into this function
+ */
 void get_experiment_data_title(char* content_name, exp_data& ed, int j){
 	if (strcmp(content_name, "MNPO") == 0){
 		ed.con_index[j] = MNPO;
@@ -284,14 +323,20 @@ void get_experiment_data_title(char* content_name, exp_data& ed, int j){
 	}
 }
 
-/*
- * line_index is 0 after we are done processing the size and the title lines of the experiment_data file. 
+/* Read each line containing experimental data, put into ed.data (2D array containing concentrations of different species at different times), and ed.sim_time_steps
+ * Called in read_experimental_data (init.cpp) for each line of data.
+ * params: 
+ * 		ip
+ * 		exp: input_data storing the content of experimental data file, declared in main (main.cpp), filled in read_file
+ * 		ed: structure to store experimental data, declared in main (main.cpp), filled in read_experimental_data (init.cpp)
+ * 		line_index: the index of the time step (The first line with read experimental data has line_index 0, but in the file, it should be line number 4, since the first three lines specify size and titles)
+ * 		
  */
 void parse_experiment_data_line(input_params& ip, input_data& exp, exp_data& ed, int line_index){
 	static const char* usage_message = "There was an error reading a LINE of given experiment data set file.";
 	int start_read = exp.index;
 	int i = exp.index; 
-	int c_index = 0; // the index of things found in a line of exp_data file (Ex: 30,45.5,0.123 then c_index would be 0,1,2. Where c_index 0 always indicates the time)
+	int c_index = 0; // the index of things found in a line of exp_data file (Ex: 30,45.5,0.123 then c_index would be 0,1,2. Where c_index 0 always indicates the time, c_index 1 would lead to species index 0 in ed.con_index and ed.data)
 	double time;
 	for (; not_EOL(exp.buffer[i]); i ++){
 		if (exp.buffer[i] == '#'){
@@ -303,12 +348,14 @@ void parse_experiment_data_line(input_params& ip, input_data& exp, exp_data& ed,
 		}
 		else if (exp.buffer[i] == ','){
 			if (c_index == 0){
+				//Scan real time (the first number in the line)
 				if (sscanf(exp.buffer + start_read, "%lf", &time) < 1){
 					usage(usage_message);
 				}
+				// Calculate the corresponding time step index in our simulation to store into ed.sim_time_steps 
 				process_experiment_time(ip, ed, time, line_index);
 			}
-			else if (c_index < (ed.num_cons + 1)){
+			else if (c_index < (ed.num_cons + 1)){ // ed.num_cons + 1 because c_index also includes time as the first number in the line
 				if (sscanf(exp.buffer + start_read, "%lf", &ed.data[c_index - 1][line_index]) < 1){
 					usage(usage_message);
 				}
@@ -351,19 +398,29 @@ void parse_experiment_data_line(input_params& ip, input_data& exp, exp_data& ed,
 	
 }
 
+/*
+ * Calculate the simulate time_step based on real time of experimental data, and store into ed.sim_time_steps
+ * Params:
+ * 		ip
+ * 		ed: experimental data struct, declared in main (main.cpp), filled in read_experimental_data(init.cpp)
+ * 		time: the time read from file, processed from parse_experiment_data_line
+ * 		line_index: index of the time step to store into ed.sim_time_steps
+ * Called in parse_experiment_data_line(io.cpp) 
+ */
 void process_experiment_time (input_params& ip, exp_data& ed, double time, int line_index){
 	if (time < 0){
 		cout << term->red << "The time specified in line : " << term->reset << line_index + 4 << term->red << " is smaller than 0 : " << term->reset << time << endl;
 		exit (EXIT_INPUT_ERROR);
 	}
 	int max_steps = ip.time_total / (ip.step_size * ip.big_gran);
-	int sim_time_step = (int) (time / (ip.step_size * ip.big_gran));
+	int sim_time_step = (int) (time / (ip.step_size * ip.big_gran)); // Compare exp data with data from big_cl, so time step should be corresponding to what it is in big_cl, rounding down.
 	if (sim_time_step >= max_steps){
 		cout << term->red << "The time specified in line: " << term->reset << line_index + 4 << term->red << " is larger than the maximum time of simulation: " << term->reset << time << endl;
 		exit(EXIT_INPUT_ERROR);
 	}
 	ed.sim_time_steps[line_index] = sim_time_step;
 }
+
 /* parse_ranges_file reads the given buffer and stores every range found in the given ranges array
 	parameters:
 		ranges: the array of pairs in which to store the lower and upper bounds of each range
@@ -454,17 +511,16 @@ void close_if_open (ofstream* file) {
 		set_num: the index of the parameter set whose concentration levels are being printed
 	returns: nothing
 	notes:
-		The first line of the file is the total width then a space then the height of the simulation.
-		Each line after starts with the time step then a space then space-separated concentration levels for every cell ordered by their position relative to the active start of the PSM.
-		If binary mode is set, the file will get the extension .bcons and print raw binary values, not ASCII text.
-		The concentration printed is mutant dependent, but usually mh1.
-	todo:
+		The first number in the line is real time (in hours), then MNPO, MCPO, MNPT, MCPT, MNPH, MCPH, MNB, MCB
+		we only print out concentrations that we tests for conditions
+	called in simulate_param_set (sim.cpp)
 */
 void print_concentrations (input_params& ip, sim_data& sd, con_levels& big_cl, int set_num, int mutant_index) {
 	double ** data = big_cl.data;
 	if (ip.print_cons) { // Print the concentrations only if the user specified it
-
-		char* filename_set = create_concentrations_file_name(ip, set_num, mutant_index);
+		
+		// create the filename to print, based on the set index, mutant, cell type
+		char* filename_set = create_concentrations_file_name(ip, set_num, mutant_index); 
 		
 		cout << "    "; // Offset the open_file message to preserve horizontal spacing
 		ofstream file_cons;
@@ -517,11 +573,19 @@ void print_concentrations (input_params& ip, sim_data& sd, con_levels& big_cl, i
 	}
 }
 
+/* Return the relative file name to store the concentrations files to open the file in print_concentrations
+ * The file name should b ./set_setIndex_scnORfib/mutantFileName
+ * called in print_concentrations.
+ */
 char * create_concentrations_file_name(input_params& ip, int set_num, int mutant_index){
+	//store set index as string to copy into file name later
 	int strlen_set_num = INT_STRLEN(set_num); // How many bytes the ASCII representation of set_num takes
 	char* str_set_num = (char*)mallocate(sizeof(char) * (strlen_set_num + 1));
 	sprintf(str_set_num, "%d", set_num);
+	
+	//declare filename_set
 	char* filename_set = NULL;
+	// SCN
 	if (ip.cell_type == SCN){
 		if (mutant_index == WT){
 			filename_set = (char*)mallocate(sizeof(char) * ( strlen("./set_") + strlen_set_num + strlen("_") + strlen(DIR_NAME_SCN) + strlen(WT_FNAME) + 1));
@@ -562,6 +626,7 @@ char * create_concentrations_file_name(input_params& ip, int set_num, int mutant
 			sprintf(filename_set, "./set_%s_%s/%s", str_set_num, DIR_NAME_SCN, C1C2_FNAME);
 		}
 	}
+	//FIB
 	else if (ip.cell_type == FIB){
 		if (mutant_index == WT){
 			filename_set = (char*)mallocate(sizeof(char) * ( strlen("./set_") + strlen_set_num + strlen("_") + strlen(DIR_NAME_FIB) + strlen(WT_FNAME) + 1));
@@ -614,8 +679,8 @@ char * create_concentrations_file_name(input_params& ip, int set_num, int mutant
 			sprintf(filename_set, "./set_%s_%s/%s", str_set_num, DIR_NAME_FIB, R_FNAME);
 		}
 	}
-	cout << filename_set<< endl;
-	
+
+	// Free what we located, filename-set will be freed in print_concentrations(io.cpp) after it is used
 	free(str_set_num);
 	return filename_set;
 }
@@ -641,11 +706,11 @@ bool not_EOL (char c) {
 	returns: nothing
 	notes:
 		This function assumes that fd points to a valid pipe and will exit with an error if it does not.
+		we pipe 3 types of scores: (1) absolute score used by SRES with WEIGHT_CONDITIONS % * condition score + WEIGHT_COST % * cost (deviation from experimental data)
+		(2) condition score (MAX_COND_SCORE - condition score) (3) cost. sres reads these three score, and print these three scores when we find a good set below our acceptable theshold
 	todo:
 */
 void write_pipe (double * score,  double * cond_score, double * exp_score, input_params& ip, sim_data& sd) {
-	//cout << term -> blue << "Writing to file descriptor: " << term ->reset << ip.pipe_out << endl;
-	//write_pipe_double (ip.pipe_out, (double) MAX_SCORE);
 	if (write(ip.pipe_out, score, sizeof(double)) == -1) {
 		term->failed_pipe_write();
 		exit(EXIT_PIPE_WRITE_ERROR);
@@ -685,6 +750,13 @@ void write_pipe_double (int fd, double value) {
 	}
 }
 
+/*
+ * Create directory set_setIndex_scnORfib inside simulation. this directory contains concentrations files. 
+ * Called in simulate_all_params(sim.cpp)
+ * params:
+ * 		set_index: index of the current param set (found in simulate_all_params)
+ * 		ip
+ */
 void create_set_directory (int set_index, input_params& ip){
 	char * dir_name = new char[20];
 	if (ip.cell_type == SCN){
@@ -721,6 +793,11 @@ void create_passed_file (input_params& ip) {
 	}
 }
 
+/* print the parameter sets into ip.passed_stream, which is created in create_passed_file (called in main.cpp if users specify)
+ * called in simulate_all_params(sim.cpp)
+ * notes: the checking whethere to print a parameter set or not is done in simulate_all_params, not in this function.
+ * this function only prints parameters into ip.passed_stream
+ */
 void print_good_set(input_params& ip, parameters& pr, int set_num){
 	if (ip.print_passed){
 		cout << term->blue << "Printing set "<< term->reset << set_num << term->blue << " into passed file"<< term->reset << endl;

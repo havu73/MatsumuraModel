@@ -18,7 +18,6 @@ void check_input_params (input_params&);
 void init_seeds (input_params& , int , bool , bool);
 void read_sim_params (input_params& , input_data& , parameters& , input_data& ); 
 double random_double (pair<double, double>);
-void fill_perturbations (rates& , char*);
 void delete_file (ofstream*);
 void delete_sets (double**, input_params& );
 void free_terminal ();

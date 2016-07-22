@@ -20,8 +20,8 @@ int check_shorter_period_behavior(peak_trough&, con_levels&, sim_data&, wildtype
 int check_longer_period_behavior(peak_trough&, con_levels&, sim_data&, wildtype_feats&, int);
 int check_shorter_amplitude_behavior(peak_trough&, con_levels&, sim_data&, wildtype_feats&, int);
 int check_longer_amplitude_behavior(peak_trough&, con_levels&, sim_data&, wildtype_feats&, int);
-int check_rythmic_behavior(sim_data&, peak_trough&, con_levels&, int);
-int check_arythmic_behavior(sim_data&, peak_trough&, con_levels&, int);
+int check_rhythmic_behavior(sim_data&, peak_trough&, con_levels&, int);
+int check_arrhythmic_behavior(sim_data&, peak_trough&, con_levels&, int);
 
 // test functions for mutants
 int test_wildtype_scn(con_levels&, sim_data&, wildtype_feats&);

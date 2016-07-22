@@ -24,6 +24,10 @@ void ensure_nonempty (const char* option, const char* arg) {
 	}
 }
 
+/* 
+ * Put users input into a structures called input_params& ip that store data related to the
+ * simulation
+ */
 void accept_input_params (int num_args, char** args, input_params& ip) {
 	string o;
 	string v;
@@ -31,7 +35,8 @@ void accept_input_params (int num_args, char** args, input_params& ip) {
 	if (num_args >1){
 		for (int i = 1; i < num_args; i += 2){
 			
-			//Process option and values 
+			//Process option and values. Changed compared to segmentation clock code because of some
+			// weird bugs
 			o = args[i];
 			if (i < num_args - 1) {
 				v = args[i + 1];
@@ -57,10 +62,6 @@ void accept_input_params (int num_args, char** args, input_params& ip) {
 				ensure_nonempty(option, value);
 				store_filename(&(ip.ranges_file), value);
 				ip.read_ranges = true;
-			}else if (option_set(option, "-o", "--print-passed")) {
-				ensure_nonempty(option, value);
-				store_filename(&(ip.passed_file), value);
-				ip.print_passed = true;
 			}else if (option_set(option, "-ce", "--compare-exp-data")){
 				ensure_nonempty(option, value);
 				store_filename(&(ip.exp_data_file), value);
@@ -78,9 +79,6 @@ void accept_input_params (int num_args, char** args, input_params& ip) {
 			}else if (option_set(option, "-ct", "--cell-type")){
 				ensure_nonempty(option, value);
 				get_cell_type(ip, value);
-			}else if (option_set(option, "-D", "--directory-path")) {
-				ensure_nonempty(option, value);
-				store_filename(&(ip.dir_path), value);
 			}else if (option_set(option, "-t", "--print-cons")) {
 				ip.print_cons = true;
 				i--;
@@ -194,10 +192,15 @@ void accept_input_params (int num_args, char** args, input_params& ip) {
 	}
 }
 
+/* Process user's input to store the mutants they want to simulate into ip.mutants
+ * ip.mutants is a list of integers corresponding to indices of mutants
+ * To see the indicies of mutants hard-coded in this program, go to macros.hpp
+ * example users' input: -M "wt p1 p2", or -M "0 1 2 3"
+ */
 void get_mutant_data(input_params& ip, char* input){
 	char * result;
 	int index = 0; 
-	result = strtok(input, " \t\n");
+	result = strtok(input, " \t\n"); // Each mutant is separated from each other by space
 	while (result != NULL){
 		if ((strcmp(result, "wt") == 0) || (strcmp(result, "0") == 0)){
 			ip.mutants[index] = WT;
@@ -249,6 +252,13 @@ void get_mutant_data(input_params& ip, char* input){
 	ip.num_mutants = index;
 }
 
+/*
+ * Calculate max cond score is called in main.cpp.
+ * If users specify mutants that are not the default options (all mutants possible)
+ * Then this function is called and will calculate the maximum conditional score 
+ * possible, store into ip.max_cond_score. 
+ * The max score of each mutant in different cell types is stored in Macros.hpp
+ */
 void calculate_max_cond_score (input_params& ip){
 	int score = 0;
 	if (ip.cell_type == SCN){
@@ -332,6 +342,10 @@ void calculate_max_cond_score (input_params& ip){
 	ip.max_cond_score = score;
 }
 
+/*
+ * Users can specify what cell type to simulate through flag -ct or --cell-type
+ * Only 'scn' and 'fib' are supported right now.
+ */
 void get_cell_type(input_params& ip, char* input){
 	if (strcmp(input, "scn") == 0){
 		ip.cell_type = SCN;
@@ -345,13 +359,18 @@ void get_cell_type(input_params& ip, char* input){
 	}
 }
 
-
+/* If not in verbose mode, then the verbose stream buff is null. 
+ * This function is taken from segmentation clock code, works fine.
+ */
 void init_verbosity (input_params& ip) {
 	if (!ip.verbose) {
 		term->set_verbose_streambuf(ip.null_stream->rdbuf());
 	}
 }
 
+/* Checking some parameters in ip
+ * For security reasons for the program
+ */
 void check_input_params (input_params& ip){
 	if (ip.piping && (ip.pipe_in == 0 || ip.pipe_out == 0)) {
 		usage("If one end of a pipe is specified, the other must be as well. Set the file descriptors for both the pipe in (-I or --pipe-in) and the pipe out (-O or --pipe-out).");
@@ -359,14 +378,17 @@ void check_input_params (input_params& ip){
 	if (!(ip.piping || ip.read_params || ip.read_ranges)) {
 		usage("Parameter must be piped in via -I or --pipe-in, read from a file via -i or --params-file, or generated from a ranges file and number of sets via -R or --ranges-file and -p or --parameter-sets, respectively.");
 	}
-	if (!ip.dir_path && ip.print_cons) {
-		usage("An output directory must be specified to print concentrations. ");
-	}
 	if (ip.reset_seed) {
 		init_seeds(ip, 0, false, false);
 	}
 }
 
+/* Seeds is used in generating random parameter if users passed in ranges file.
+ * Params: ip: structure to store users' input params
+ * 		   set_num: index of the set currently being simulated (each set has its own seed)
+ * 		   append: whether or not to indent in the file (not really important)
+ * 		   indent_message: whether or not to indent message to print out in terminal (not important)
+ */ 
 void init_seeds (input_params& ip, int set_num, bool append, bool indent_message) {
 	// If the file is being created then generate the parameter set seed
 	if (!append && ip.store_pseed) {
@@ -398,12 +420,21 @@ void init_seeds (input_params& ip, int set_num, bool append, bool indent_message
 	}
 }
 
+/* Read in the parameter set from a file/ a range file or through piping (method used by sres)
+ * The functions that this function call can be found in io.cpp
+ * Params: ip
+ * 		   params_data: input_data for users' parameters file, declared in main.cpp
+ * 		   pr: declared in main.cpp
+ * 		   ranges_date: input_data for users' ranges file, declared in main.cpp 
+ */
 void read_sim_params (input_params& ip, input_data& params_data, parameters& pr, input_data& ranges_data) {
 	cout << term->blue;
-	if (ip.piping) { // If the user specified piping
-		//cout << "Reading pipe " << term->reset << "(file descriptor " << ip.pipe_in << ") . . . ";
-		read_pipe(pr, ip);
+	// OPTION 1: PIPING
+	if (ip.piping) { 
+		cout << "Reading pipe " << term->reset << "(file descriptor " << ip.pipe_in << ") . . . ";
+		read_pipe(pr, ip); 
 		term->done();
+	// OPTION 2: PARAMETER FILE
 	} else if (ip.read_params) { // If the user specified a parameter sets input file
 		read_file(&params_data);
 		for (int i = 0; i < ip.num_sets; i++) {
@@ -415,16 +446,17 @@ void read_sim_params (input_params& ip, input_data& params_data, parameters& pr,
 				ip.num_sets = i;
 			}
 		}
+	// OPTION 3: RANGES FILE
 	} else if (ip.read_ranges) { // If the user specified a ranges input file to generate random numbers from
 		cout << "Generating " << term->reset << ip.num_sets << " random parameter sets according to the ranges in " << ranges_data.filename << " . . ." << endl;
 		cout << "  ";
 		read_file(&ranges_data);
 		pair <double, double> ranges[NUM_RATES];
-		parse_ranges_file(ranges, ranges_data.buffer);
+		parse_ranges_file(ranges, ranges_data.buffer); // get the ranges from users' ranges file
 		srand(ip.pseed);
 		for (int i = 0; i < ip.num_sets; i++) {
 			for (int j = 0; j < NUM_RATES; j++) {
-				pr.data[i][j] = random_double(ranges[j]);
+				pr.data[i][j] = random_double(ranges[j]); // Generate random numbers as paramters within the ranges
 			}
 		}
 		term->done();
@@ -433,13 +465,19 @@ void read_sim_params (input_params& ip, input_data& params_data, parameters& pr,
 	} 
 }
 
+/* If users wants to simulate and then calculate the difference from experimental data. 
+ * Experimental data will be stored into ed
+ * Params: ip
+ * 		   params_data: input_data for users' experimental data file, declared in main.cpp
+ * 
+ */
 void read_experiment_data(input_params& ip, input_data& experiment_data, exp_data& ed){
 	cout << term->blue;
 	cout << "Reading experimental data...";
 	read_file(&experiment_data);
 	int cons;
 	int steps;
-	parse_experiment_data_size(ip, experiment_data, &cons, &steps);
+	parse_experiment_data_size(ip, experiment_data, &cons, &steps);// get the size to initialize ed structure
 	ed.initialize(cons, steps);
 	parse_experiment_data_title(experiment_data, ed);
 	for (int i = 0; i < ed.num_time_steps; i ++){
@@ -457,48 +495,6 @@ double random_double (pair<double, double> range) {
 	return range.first + (range.second - range.first) * rand() / (RAND_MAX + 1.0);
 }
 
-
-/* fill_perturbations fills the factors_perturb array in the given rates struct based on the given perturbations input buffer
-	parameters:
-		rs: the current simulation's rates to fill
-		perturbs: the perturbations buffer taken from the input file
-	returns: nothing
-	notes:
-		The buffer should contain one perturbation factor per line in the format 'factor start end' where 'start' is the index of the concentration to start applying the perturbation and 'end' is the index of the concentration after which to stop applying the perturbation. A perturbation with a maximum absolute percentage of 'factor' is applied to every concentration from 'start' to 'end'.
-	todo:
-		TODO allow comments in files
-*/
-void fill_perturbations (rates& rs, char* perturbs) {
-	if (perturbs != NULL) {
-		static const char* usage_message = "There was an error reading the given perturbations file.";
-		int index = 0;
-		while (perturbs[index] != '\0') {
-			double factor = 0; // The perturbation factor
-			int con_start = 0; // The starting concentration
-			int con_end = 0; // The ending concentration
-			
-			// Read the perturbations
-			if (sscanf(perturbs + index, "%lf %d %d", &factor, &con_start, &con_end) == 3) {
-				if (factor < 0) {
-					usage("The given perturbations file includes at least one factor less than 0. Adjust the perturbations file given with -u or --perturb-file.");
-				}
-				if (con_start < 0 || con_start >= NUM_RATES || con_end < 0 || con_end >= NUM_RATES) {
-					usage("The given perturbations file includes rates outside of the valid range. Adjust the perturbations file given with -u or --perturb-file or add the appropriate rates by editing the macros file and recompiling.");
-				}
-				
-				// If the given factor and index range is valid then fill the current simulation's rates with the perturbations
-				factor /= 100;
-				for (int i = con_start; i <= con_end; i++) {
-					rs.factors_perturb[i] = factor;
-				}
-			} else {
-				cout << sscanf(perturbs + index, "%lf %d %d", &factor, &con_start, &con_end);
-				usage(usage_message);
-			}
-			while (not_EOL(perturbs[index++])) {} // Skip to the next line
-		}
-	}
-}
 
 /* delete_file closes the given file and frees it from memory
 	parameters:

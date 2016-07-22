@@ -223,6 +223,9 @@ double simulate_scn_param_set(int set_num, input_params& ip, sim_data& sd, rates
 	return score;
 }
 
+/* Run simulation and call test functions 
+ * 
+ */
 double simulate_fib_param_set(int set_num, input_params& ip, sim_data& sd, rates& rs, con_levels& cl, con_levels& big_cl, exp_data& ed){
 	cout << term->blue << "Simulating set " << term->reset << set_num << " . . ." << endl;
 	
@@ -254,9 +257,9 @@ double simulate_fib_param_set(int set_num, input_params& ip, sim_data& sd, rates
 					print_concentrations(ip, sd, big_cl, set_num, i);
 				}
 			}
-			//else{
-				//cout<< term->blue << "Set " << term->reset << set_num << term->blue << " wild type failed because concentrations is negative or nan ..." << endl;
-			//}
+			else{
+				cout<< term->blue << "Set " << term->reset << set_num << term->blue << " wild type failed because concentrations is negative or nan ..." << endl;
+			}
 		}
 		else if (ip.mutants[i] == P1){
 			revert_rate = rs.rates_base[TRPO];
@@ -264,14 +267,14 @@ double simulate_fib_param_set(int set_num, input_params& ip, sim_data& sd, rates
 			valid = calculate_concentrations(ip, cl, big_cl, rs, sd);
 			if (valid){
 				score += (double)test_per1kn_fib(big_cl, sd, wtf);
-				//cout << "Score P1: " << score << endl;
+				cout << "Score P1: " << score << endl;
 				if (ip.print_cons){
 					print_concentrations(ip, sd, big_cl, set_num, i);
 				}
 			}
-			//else{
-				//cout << term->blue << "Set " << term->reset << set_num << term->blue << " mutant Per 1 knock down failed because concentrations is negative or nan ..." << endl;
-			//}
+			else{
+				cout << term->blue << "Set " << term->reset << set_num << term->blue << " mutant Per 1 knock down failed because concentrations is negative or nan ..." << endl;
+			}
 			rs.rates_base[TRPO] = revert_rate;
 		}
 		else if (ip.mutants[i] == P2){
@@ -280,14 +283,14 @@ double simulate_fib_param_set(int set_num, input_params& ip, sim_data& sd, rates
 			valid = calculate_concentrations(ip, cl, big_cl, rs, sd);
 			if (valid){
 				score += (double)test_per2kn_fib(big_cl, sd, wtf);
-				//cout << "Score P2: " << score << endl;
+				cout << "Score P2: " << score << endl;
 				if (ip.print_cons){
 					print_concentrations(ip, sd, big_cl, set_num, i);
 				}
 			}
-			//else{
-				//cout << term->blue << "Set " << term->reset << set_num << term->blue << " mutant Per 2 knock down failed because concentrations is negative or nan ..." << endl;
-			//}
+			else{
+				cout << term->blue << "Set " << term->reset << set_num << term->blue << " mutant Per 2 knock down failed because concentrations is negative or nan ..." << endl;
+			}
 			rs.rates_base[TRPT] = revert_rate;
 		}
 		else if (ip.mutants[i] == P3){
@@ -296,14 +299,14 @@ double simulate_fib_param_set(int set_num, input_params& ip, sim_data& sd, rates
 			valid = calculate_concentrations(ip, cl, big_cl, rs, sd);
 			if (valid){
 				score += (double)test_per3kn_fib(big_cl, sd, wtf);
-				//cout << "Score P3: " << score << endl;
+				cout << "Score P3: " << score << endl;
 				if (ip.print_cons){
 					print_concentrations(ip, sd, big_cl, set_num, i);
 				}
 			}
-			//else{
-				//cout << term->blue << "Set " << term->reset << set_num << term->blue << " mutant Per 3 knock down failed because concentrations is negative or nan ..." << endl;
-			//}
+			else{
+				cout << term->blue << "Set " << term->reset << set_num << term->blue << " mutant Per 3 knock down failed because concentrations is negative or nan ..." << endl;
+			}
 			rs.rates_base[TRPH] = revert_rate;
 		}
 		else if (ip.mutants[i] == C1){
@@ -312,11 +315,11 @@ double simulate_fib_param_set(int set_num, input_params& ip, sim_data& sd, rates
 			valid = calculate_concentrations(ip, cl, big_cl, rs, sd);
 			if (valid){
 				score += (double) test_cry1kn_fib(big_cl, sd, wtf);
-				//cout << "Score C1: " << score << endl;
+				cout << "Score C1: " << score << endl;
 			}
-			//else{
-				//cout << term->blue << "Set " << term->reset << set_num << term->blue << " mutant Cry 1 knock down failed because concentrations is negative or nan ..." << endl;
-			//}
+			else{
+				cout << term->blue << "Set " << term->reset << set_num << term->blue << " mutant Cry 1 knock down failed because concentrations is negative or nan ..." << endl;
+			}
 			rs.rates_base[TRRO] = revert_rate;
 		}
 		else if (ip.mutants[i] == C2){
@@ -325,11 +328,11 @@ double simulate_fib_param_set(int set_num, input_params& ip, sim_data& sd, rates
 			valid = calculate_concentrations(ip, cl, big_cl, rs, sd);
 			if (valid){
 				score += (double) test_cry2kn_fib(big_cl, sd, wtf);
-				//cout << "Score C2: " << score << endl;
+				cout << "Score C2: " << score << endl;
 			}
-			//else {
-				//cout << term->blue << "Set " << term->reset << set_num << term->blue << " mutant Cry 2 knock down failed because concentrations is negative or nan ..." << endl;
-			//}
+			else {
+				cout << term->blue << "Set " << term->reset << set_num << term->blue << " mutant Cry 2 knock down failed because concentrations is negative or nan ..." << endl;
+			}
 			rs.rates_base[TRRT] = revert_rate;
 		}
 		else if (ip.mutants[i] == BM){
@@ -338,11 +341,11 @@ double simulate_fib_param_set(int set_num, input_params& ip, sim_data& sd, rates
 			valid = calculate_concentrations(ip, cl, big_cl, rs, sd);
 			if (valid){
 				score += (double) test_bmalkn_fib(big_cl, sd, wtf);
-				//cout << "Score BM: " << score << endl;
+				cout << "Score BM: " << score << endl;
 			}
-			//else {
-				//cout << term->blue << "Set " << term->reset << set_num << term->blue << " mutant Bmal knock down failed because concentrations is negative or nan ..." << endl;				
-			//}
+			else {
+				cout << term->blue << "Set " << term->reset << set_num << term->blue << " mutant Bmal knock down failed because concentrations is negative or nan ..." << endl;				
+			}
 			rs.rates_base[TRB] = revert_rate;
 		}
 		else if (ip.mutants[i] == NP){
@@ -351,11 +354,11 @@ double simulate_fib_param_set(int set_num, input_params& ip, sim_data& sd, rates
 			valid = calculate_concentrations(ip, cl, big_cl, rs, sd);
 			if (valid){
 				score += (double) test_npas2kn_fib(big_cl, sd, wtf);
-				//cout << "Score NP: " << score << endl;
+				cout << "Score NP: " << score << endl;
 			}
-			//else {
-				//cout << term->blue << "Set " << term->reset << set_num << term->blue << " mutant Npas2 knock down failed because concentrations is negative or nan ..." << endl;				
-			//}
+			else {
+				cout << term->blue << "Set " << term->reset << set_num << term->blue << " mutant Npas2 knock down failed because concentrations is negative or nan ..." << endl;				
+			}
 			rs.rates_base[TRNP] = revert_rate;
 		}
 		else if (ip.mutants[i] == C1C2){
@@ -366,11 +369,11 @@ double simulate_fib_param_set(int set_num, input_params& ip, sim_data& sd, rates
 			valid = calculate_concentrations(ip, cl, big_cl, rs, sd);
 			if (valid){
 				score += (double) test_c1c2kn_fib(big_cl, sd, wtf);
-				//cout << "Score C1C2: " << score << endl;
+				cout << "Score C1C2: " << score << endl;
 			}
-			//else {
-				//cout << term->blue << "Set " << term->reset << set_num << term->blue << " mutant Cry1 Cry2 knock down failed because concentrations is negative or nan ..." << endl;				
-			//}
+			else {
+				cout << term->blue << "Set " << term->reset << set_num << term->blue << " mutant Cry1 Cry2 knock down failed because concentrations is negative or nan ..." << endl;				
+			}
 			rs.rates_base[TRRO] = revert_rate;
 			rs.rates_base[TRRT] = revert_rate_2;
 		}
@@ -382,11 +385,11 @@ double simulate_fib_param_set(int set_num, input_params& ip, sim_data& sd, rates
 			valid = calculate_concentrations(ip, cl, big_cl, rs, sd);
 			if (valid){
 				score += (double) test_p2c1kn_fib(big_cl, sd, wtf);
-				//cout << "Score P2C1: " << score << endl;
+				cout << "Score P2C1: " << score << endl;
 			}
-			//else{
-				//cout << term->blue << "Set " << term->reset << set_num << term->blue << " mutant Per2 Cry1 knock down failed because concentrations is negative or nan ..." << endl;							
-			//}
+			else{
+				cout << term->blue << "Set " << term->reset << set_num << term->blue << " mutant Per2 Cry1 knock down failed because concentrations is negative or nan ..." << endl;							
+			}
 			rs.rates_base[TRPT] = revert_rate;
 			rs.rates_base[TRRO] = revert_rate_2;
 		}
@@ -398,11 +401,11 @@ double simulate_fib_param_set(int set_num, input_params& ip, sim_data& sd, rates
 			valid = calculate_concentrations(ip, cl, big_cl, rs, sd);
 			if (valid){
 				score += (double) test_p2c2kn_fib(big_cl, sd, wtf);
-				//cout << "Score P2C2: " << score << endl;
+				cout << "Score P2C2: " << score << endl;
 			}
-			//else {
-				//cout << term->blue << "Set " << term->reset << set_num << term->blue << " mutant Per2 Cry2 knock down failed because concentrations is negative or nan ..." << endl;												
-			//}
+			else {
+				cout << term->blue << "Set " << term->reset << set_num << term->blue << " mutant Per2 Cry2 knock down failed because concentrations is negative or nan ..." << endl;												
+			}
 			rs.rates_base[TRPT] = revert_rate;
 			rs.rates_base[TRRT] = revert_rate_2;
 		}
@@ -412,11 +415,11 @@ double simulate_fib_param_set(int set_num, input_params& ip, sim_data& sd, rates
 			valid = calculate_concentrations(ip, cl, big_cl, rs, sd);
 			if (valid){
 				score += (double) test_rkn_fib(big_cl, sd, wtf);
-				//cout << "Score R: " << score << endl;
+				cout << "Score R: " << score << endl;
 			}
-			//else {
-				//cout << term->blue << "Set " << term->reset << set_num << term->blue << " mutant Rev-erb knock down failed because concentrations is negative or nan ..." << endl;															
-			//}
+			else {
+				cout << term->blue << "Set " << term->reset << set_num << term->blue << " mutant Rev-erb knock down failed because concentrations is negative or nan ..." << endl;															
+			}
 			rs.rates_base[TRREV] = revert_rate;
 		}
 		//// COST//////

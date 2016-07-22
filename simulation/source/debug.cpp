@@ -1,7 +1,20 @@
+/* All functions in this file are not used in the simulation process. 
+ * They can be used by coders to check whether data is inputed correctly.
+ * Be advised that some functions are rather outdated, meaning they may not 
+ * print out all rates or states existent in the system. 
+ */
 #include "debug.hpp"
 #include "macros.hpp"
 #include "io.hpp"
 using namespace std;
+/* Prints out  to terminal the concentrations of species at different step within cl (not big_cl)
+ * This functions can be used to test whether intial conditions is entered correctly or 
+ * Params: cl: the con_level structures conctaining concentrations. 
+ * 		   t: index of the time step we want to check concentrations of
+ * Notes: to check initial conditions, we input cl (not bit_cl), and t = 0
+ * 		  also note that time step t differ depending on whether you use cl or big_cl
+ * 		  To know more about cl and big_cl, look at sim.cpp
+ */
 void test_concentrations(con_levels& cl, int t){
 	for (int i = 0; i< NUM_CONS; i++){
 		if (i == GRB){
@@ -544,7 +557,10 @@ void test_concentrations(con_levels& cl, int t){
 	}
 }
 
-
+/* Prints out the parameters inputed to the model.
+ * Use: Check whether input files for parameters are inputted correctly
+ * Params: rs: the structures that contain live parameters
+ */
 void test_rates(rates& rs){
 	double* r = rs.rates_base;
 	for (int i = 0 ; i < NUM_RATES ; i++){
@@ -756,7 +772,14 @@ void test_rates(rates& rs){
 	}
 }
 
-
+/* Prints out the derivative into a file test_der.txt inside simulation folder
+ * Here, derivative means the difference between the first compared to second step concentrations divided by stepsize
+ * Output was originally compared with Kim and Forger 2012's code derivative to make sure that we converted 
+ * their model correctly.
+ * Params: cl: not big_cl
+ * Notes: This function should be called in calculate_concentrations in calculation.cpp, at the second step (j == 2)
+ * 
+ */
 void test_derivative(con_levels& cl){
 	cout << "Into this function" << endl;
 		ofstream test_der_file;

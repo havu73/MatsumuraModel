@@ -1,12 +1,27 @@
 #include "calculation.hpp"
 #include "debug.hpp"
 #include "macros.hpp"
+
+/* 
+ * Calculate concentrations calls all the find* functions to calculate concentrations
+ * Limit changes to this file as much as we can, since it is really easy to mess up the system.
+ * This function is called in simulate_param_set in sim.cpp
+ * Params:
+ * 		ip
+ * 		cl: the cl that contains concentrations of species for ip.big_gran time steps, used for direct calculation
+ * 		big_cl: the con_levels structures that store concentrations over simulation time. If ip.step_size is 0.001 and ip.time_total is 100,
+ * 				-->sd.steps_total = 10000. If big_gran is 10, then cl has size 10 time-steps, and big_cl has size 10000/ 10 = 1000 time steps,
+ * 				Meaning we only record concentrations every 0.1 hours instead of 0.001, eventhough we still use 0.001 as step size for the sake of 
+ * 				accurate calculations.
+ * 		rs: structs to store the parameter sets passed in by users/ parameter estimation program
+ * 		sd: simulation data
+ */
 bool calculate_concentrations(input_params& ip, con_levels& cl, con_levels& big_cl, rates& rs, sim_data& sd){
 	double * sim_rates = rs.rates_base;
 	bool valid = true; // valid turns to false if we find a concentration that is either negative, or NaN
 	int check_index;
 	for (int j = 1 ; j< sd.steps_total; j++){
-		check_index = j % cl.big_gran;
+		check_index = j % cl.big_gran; // Necessary to check for nan later
 		
 		findGRB(sim_rates, cl, j, sd.step_size);
 		findG(sim_rates, cl, j, sd.step_size);
